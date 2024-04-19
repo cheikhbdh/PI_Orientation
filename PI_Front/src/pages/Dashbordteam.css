@@ -1,0 +1,36 @@
+.navbar-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #010142;
+        height: 70px;
+        padding: 5px 10px;
+    
+}
+
+.navbar-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #eee; /* Couleur de fond de la partie inférieure de la barre de navigation */
+}
+
+
+.logoIP {
+    background-image: url('../assets/images/cards.png');
+    border: 1px solid #E0E0E0;
+    height: 100px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 96px;
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}

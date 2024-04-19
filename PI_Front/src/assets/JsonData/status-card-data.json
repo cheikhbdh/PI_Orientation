@@ -1,0 +1,22 @@
+[
+    {
+        "icon": "bx bx-group",
+        "count": "6",
+        "title": "les equipes"
+    },
+    {
+        "icon": "bx bx-crown",
+        "count": "5",
+        "title": "les juryes"
+    },
+    {
+        "icon": "bx bx-trophy",
+        "count": "7",
+        "title": "les challenges"
+    },
+    {
+        "icon": "bx bx-medal",
+        "count": "let's code",
+        "title": "1st equipe "
+    }
+]

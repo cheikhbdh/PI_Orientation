@@ -1,0 +1,97 @@
+.post-card {
+    border: 1px solid #B6B6B6; /* Subtle contrast border */
+    border-radius: 8px;
+    padding: 16px; /* Reduced padding for a smaller profile */
+    margin: 30px auto; /* Reduced margin for closer spacing */
+    margin-right: 130px;
+    color: #000; /* Retained white text for contrast */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for interactive effects */
+    width: 100%; /* Setting max-width for responsive design */
+    max-width: 800px; /* Smaller maximum width for a more compact layout */
+}
+
+
+.post-card-header {
+    display: flex;
+    align-items: center;
+}
+
+.post-card-profile-pic {
+    max-width: 50px;
+    max-height: 70px;
+    margin-left: 50px;
+    margin-top: 10px;
+    /* border-radius: 50%; */
+}
+
+.post-card-author {
+    
+        margin-top: 10px;
+        padding: 10px;
+    
+}
+.post-card-author .s1 {
+    font-size: 20px;
+    color: #000;
+  }
+  
+  .post-card-author .s2 {
+    font-size: 9px;
+    color: #000;
+  }
+.post-card-date {
+    font-size: 0.8rem; /* Smaller font for subtlety */
+    opacity: 0.8; /* Slightly clearer than before */
+    margin-right: 2px; /* Ajouter une marge à droite */
+}
+
+.post-card-content {
+    margin-top: 6px;
+    margin-bottom: 15px;
+    margin-left: 50px;
+    font-size: 0.95rem; /* Slightly smaller for compactness */
+    line-height: 1.4; /* Adjusted line spacing for readability */
+}
+
+.post-card-action {
+    background: none;
+    border: none;
+    color: #B39DDB; /* Retained light purple */
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.2s ease; /* Smooth color transition */
+}
+
+.post-card-action:hover {
+    color: #7E57C2; /* Darker purple on hover */
+}
+
+.post-card-footer {
+    display: flex; /* Utiliser Flexbox pour aligner les éléments horizontalement */
+    align-items: center;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.post-card-comment-input {
+    width: calc(100% - 32px);
+    padding: 10px;
+    margin-right: 26px;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+.post-card-submit-comment {
+    background-color: #1E88E5;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    /* margin-bottom: 8px; */
+}
+
+.post-card-submit-comment:hover {
+    background-color: #1565C0;
+}

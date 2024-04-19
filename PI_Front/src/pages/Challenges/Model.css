@@ -1,0 +1,44 @@
+.modal {
+    position: fixed;
+    bottom: 10%; /* Adjust the position from the bottom */
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: #fff;
+    width: 40%;
+    min-width: 300px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 50px; /* Increase bottom margin to lower the modal */
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between; /* Align buttons to each end */
+    padding: 10px;
+}
+
+/* Ensure buttons have equal styling */
+.modal-footer .btn {
+    flex: 1; /* Make buttons expand to fill the footer */
+    margin: 0 5px; /* Spacing between buttons */
+}
+
+/* Styling updates for button size and interaction */
+.btn-primary, .btn-success {
+    font-size: 16px;
+    padding: 8px 12px; /* Adjust padding for better ergonomics */
+}
+
+/* Styles for displaying challenges more prominently */
+.col-md-4 {
+    flex: 0 0 100%; /* Each card takes full width of its container */
+    max-width: 100%; /* Override Bootstrap's max-width for col-md-4 */
+}
