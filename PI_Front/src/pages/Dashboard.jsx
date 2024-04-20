@@ -16,20 +16,20 @@ import statusCards from '../assets/JsonData/status-card-data.json'
 
 const chartOptions = {
     series: [{
-        name: 'let s code',
+        name: 'va',
         data: [80,70,75,90,76,80,70]
     }, {
-        name: '404',
+        name: 'ka',
         data: [40, 30, 70, 80, 40, 16, 40]
     },
     {
-        name: 'net code',
+        name: 'la',
         data: [50, 12, 50, 57, 90, 26, 50]
     },{
-        name: 'davinshy',
+        name: 'ch',
         data: [49, 70, 90, 60, 59, 26, 70]
     },{
-        name: 'Hamas',
+        name: 'ca',
         data: [80, 50, 60, 85, 10, 16, 40]
     }],
     options: {
@@ -44,7 +44,7 @@ const chartOptions = {
             curve: 'smooth'
         },
         xaxis: {
-            categories: ['defi1', 'defi2', 'defi3', 'defi4', 'defi5', 'defi6','defi7']
+            categories: ['lundi', 'mardiu', 'mercredi', 'jeudi', 'vendredi', 'samdi','dimanch']
         },
         legend: {
             position: 'top'

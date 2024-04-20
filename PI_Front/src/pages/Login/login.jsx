@@ -9,12 +9,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { GoogleLogin } from 'react-google-login';
+import axios from 'axios';
 import GoogleIcon from '@mui/icons-material/Google';
 
 
-const defaultTheme = createTheme();
+// const defaultTheme = createTheme();
 const responseGoogle = (response) => {
 	console.log(response);
 	// Ici vous pouvez gérer la réponse et par exemple stocker le jeton d'accès
@@ -26,28 +26,47 @@ const responseGoogle = (response) => {
 	// Gérer l'échec de la connexion
   }
   export default function Login() {
-	const handleSubmit = (event) => {
-	  event.preventDefault();
-	  const data = new FormData(event.currentTarget);
-	  console.log({
-		email: data.get('email'),
-		password: data.get('password'),
-	  });
-	};
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
+		console.log('Form submitted');
+		console.log('Email:', data.get('email'));
+		try {
+		  const response = await axios.post('http://127.0.0.1:8000/login', {
+			login_or_email: data.get('email'),
+			password: data.get('password'),
+		  });
+
+	      console.log(response.data.role);
+		  if(response.status==200){
+			localStorage.setItem("token",response.data.jwt)
+		  if (response.data.role === 'etudiant') {
+			window.location.href = '/home';
+		  } else  {
+			window.location.href = '/dashboard';
+		  }
+		}else{
+          console.log("mots de pass incorrect")
+		}
+		} catch (error) {
+		  console.error('Login error:', error.response.data);
+		  // Handle error here, e.g., display an error message
+		}
+	  };
 	const googleButtonStyle = {
-		// marginBottom: '16px',
+		marginBottom: '16px',
 		background: 'black',
 		color: 'white',
 		boxShadow: 'none',
 		textTransform: 'none',
 		display: 'flex',
-		justifyContent: 'center', // Centre le texte et l'icône
+		justifyContent: 'center', 
 		paddingLeft: (theme) => theme.spacing(1),
 		paddingRight: (theme) => theme.spacing(1),
-		height: '50px', // Augmente la hauteur du bouton
-		borderRadius: '4px', // Angles arrondis, ajustez selon vos préférences
-		border: '1px solid #dadce0', // Ajoute une bordure subtile
-		margin: '20px ', // Ajoute un peu d'espace autour du bouton
+		height: '50px',
+		borderRadius: '4px',
+		border: '1px solid #dadce0', 
+		margin: '20px ',
 		'&:hover': {
 		  boxShadow: 'none',
 		  background: 'rgba(0, 0, 0, 0.04)',
@@ -59,7 +78,7 @@ const responseGoogle = (response) => {
 	
   
 	return (
-	  <ThemeProvider theme={defaultTheme}>
+	
 		<Container component="main" maxWidth="xs">
 		  <CssBaseline />
 		  <Box
@@ -81,7 +100,7 @@ const responseGoogle = (response) => {
                 disabled={renderProps.disabled}
                 startIcon={
 					<Avatar sx={{ bgcolor: 'white', marginRight: 2 }}>
-					  <GoogleIcon sx={{ color: '#DB4437' }} /> {/* Couleur du logo Google */}
+					  <GoogleIcon sx={{ color: '#DB4437' }} /> 
 					</Avatar>
 				  }
                 sx={googleButtonStyle}
@@ -139,6 +158,6 @@ const responseGoogle = (response) => {
 			</Box>
 		  </Box>
 		</Container>
-	  </ThemeProvider>
+
 	);
   }

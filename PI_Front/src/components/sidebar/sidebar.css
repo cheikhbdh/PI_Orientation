@@ -10,8 +10,10 @@
     z-index: 999; 
 }
 
+
 .sidebar__logo {
-    height: 150px;
+    height: 120px;
+    width: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
