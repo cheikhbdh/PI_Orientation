@@ -9,12 +9,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { GoogleLogin } from 'react-google-login';
+import axios from 'axios';
 import GoogleIcon from '@mui/icons-material/Google';
 
 
-const defaultTheme = createTheme();
+// const defaultTheme = createTheme();
 const responseGoogle = (response) => {
 	console.log(response);
 	// Ici vous pouvez gérer la réponse et par exemple stocker le jeton d'accès
@@ -26,14 +26,30 @@ const responseGoogle = (response) => {
 	// Gérer l'échec de la connexion
   }
   export default function Login() {
-	const handleSubmit = (event) => {
-	  event.preventDefault();
-	  const data = new FormData(event.currentTarget);
-	  console.log({
-		email: data.get('email'),
-		password: data.get('password'),
-	  });
-	};
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
+		console.log('Form submitted');
+		console.log('Email:', data.get('email'));
+		try {
+		  const response = await axios.post('http://127.0.0.1:8000/login', {
+			login_or_email: data.get('email'),
+			password: data.get('password'),
+		  });
+
+	      console.log(response.data.role);
+		  if (response.data.role === 'etudiant') {
+			window.location.href = '/home';
+		  } else if (response.data.role === 'admin') {
+			window.location.href = '/dashbord';
+		  }else{
+			console.log("login succesfull")
+		  }
+		} catch (error) {
+		  console.error('Login error:', error.response.data);
+		  // Handle error here, e.g., display an error message
+		}
+	  };
 	const googleButtonStyle = {
 		// marginBottom: '16px',
 		background: 'black',
@@ -59,7 +75,7 @@ const responseGoogle = (response) => {
 	
   
 	return (
-	  <ThemeProvider theme={defaultTheme}>
+	
 		<Container component="main" maxWidth="xs">
 		  <CssBaseline />
 		  <Box
@@ -139,6 +155,6 @@ const responseGoogle = (response) => {
 			</Box>
 		  </Box>
 		</Container>
-	  </ThemeProvider>
+
 	);
   }
