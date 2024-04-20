@@ -14,12 +14,13 @@ import Alert from '@mui/material/Alert';
 export default function SignUp() {
     const [showAlert, setShowAlert] = React.useState(false);
     const [alertMsg, setAlertMsg] = React.useState('');
-
+    const [alertSeverity, setAlertSeverity] = React.useState('success');
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         console.log('Form submitted');
         console.log('Email:', data.get('email'));
+		
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/register', {
@@ -36,11 +37,13 @@ export default function SignUp() {
                     window.location.href = '/';
                 }, 3000);  // Redirect after 3 seconds
             } else {
-                console.log("Registration successful");
+                setAlertMsg(response.error);
+				setAlertSeverity('error');
             }
         } catch (error) {
             console.error('register error:', error.response?.data);
-            setAlertMsg('Registration failed! Please try again.');
+            setAlertMsg(error.response?.data.error);
+			setAlertSeverity('error');
             setShowAlert(true);
             // Optionally reset alert visibility after some time
             setTimeout(() => {
@@ -68,7 +71,7 @@ export default function SignUp() {
                     Sign Up
                 </Typography>
                 {showAlert && (
-                    <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
+                    <Alert severity={alertSeverity} sx={{ width: '100%', mt: 2 }}>
                         {alertMsg}
                     </Alert>
                 )}

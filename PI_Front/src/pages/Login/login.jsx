@@ -38,32 +38,35 @@ const responseGoogle = (response) => {
 		  });
 
 	      console.log(response.data.role);
+		  if(response.status==200){
+			localStorage.setItem("token",response.data.jwt)
 		  if (response.data.role === 'etudiant') {
 			window.location.href = '/home';
-		  } else if (response.data.role === 'admin') {
-			window.location.href = '/dashbord';
-		  }else{
-			console.log("login succesfull")
+		  } else  {
+			window.location.href = '/dashboard';
 		  }
+		}else{
+          console.log("mots de pass incorrect")
+		}
 		} catch (error) {
 		  console.error('Login error:', error.response.data);
 		  // Handle error here, e.g., display an error message
 		}
 	  };
 	const googleButtonStyle = {
-		// marginBottom: '16px',
+		marginBottom: '16px',
 		background: 'black',
 		color: 'white',
 		boxShadow: 'none',
 		textTransform: 'none',
 		display: 'flex',
-		justifyContent: 'center', // Centre le texte et l'icône
+		justifyContent: 'center', 
 		paddingLeft: (theme) => theme.spacing(1),
 		paddingRight: (theme) => theme.spacing(1),
-		height: '50px', // Augmente la hauteur du bouton
-		borderRadius: '4px', // Angles arrondis, ajustez selon vos préférences
-		border: '1px solid #dadce0', // Ajoute une bordure subtile
-		margin: '20px ', // Ajoute un peu d'espace autour du bouton
+		height: '50px',
+		borderRadius: '4px',
+		border: '1px solid #dadce0', 
+		margin: '20px ',
 		'&:hover': {
 		  boxShadow: 'none',
 		  background: 'rgba(0, 0, 0, 0.04)',
@@ -97,7 +100,7 @@ const responseGoogle = (response) => {
                 disabled={renderProps.disabled}
                 startIcon={
 					<Avatar sx={{ bgcolor: 'white', marginRight: 2 }}>
-					  <GoogleIcon sx={{ color: '#DB4437' }} /> {/* Couleur du logo Google */}
+					  <GoogleIcon sx={{ color: '#DB4437' }} /> 
 					</Avatar>
 				  }
                 sx={googleButtonStyle}
