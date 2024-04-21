@@ -175,6 +175,22 @@ const ImageSection = () => (
       </div>
       </>
 );
+const AlreadyRespondedMessage = () => (
+  <div className="already-responded-container">
+    <div className="already-responded-header">
+      Vous avez déjà répondu
+    </div>
+    <div className="already-responded-body">
+      Vous ne pouvez remplir ce formulaire qu'une seule fois.
+      <br />
+      Si vous pensez qu'il s'agit d'une erreur, contactez le propriétaire du formulaire.
+    </div>
+    <button className="already-responded-btn">
+      Afficher la note
+    </button>
+  </div>
+);
+
 const LaodingPage = () => {
   const [isOriented, setIsOriented] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -210,7 +226,7 @@ const LaodingPage = () => {
     const checkOrientation = async (userId) => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/check-orientation/${userId}`); // Use user ID in the URL
-        if(response.data.statu==='orienter'){
+        if(response.data.statu==='orienté'){
           setIsOriented(true)
         }else{
           console.log("ch")
@@ -233,9 +249,7 @@ const LaodingPage = () => {
     return (
       <div className="container center-content landing-page">
         <Navbar />
-        <div className="centered-message">
-          <h1>Vous avez déjà été orienté.</h1>
-        </div>
+        <AlreadyRespondedMessage/>
       </div>
     );
   }
