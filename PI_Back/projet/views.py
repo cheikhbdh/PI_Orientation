@@ -2,11 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.exceptions import AuthenticationFailed
-from .serializers import UserSerializer
-from .models import CustomUser
+from .serializers import UserSerializer,EtudiantSerializer,OrientationSerializer
+from .models import CustomUser,Etudiant,Orientation,Orientation_F
 import jwt, datetime
 from rest_framework import status
-
+from rest_framework import viewsets
 
 class RegisterView(APIView):
  def post(self, request):
@@ -44,7 +44,7 @@ class LoginView(APIView):
 
         response = Response({'jwt': token,'id_u':user.id_u,'role':user.role,'login':user.login})
 
-        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.set_cookie(key='jwt', value=token, httponly=True, secure=True, samesite='None')
         return response
 
 class UserView(APIView):
@@ -73,3 +73,24 @@ class LogoutView(APIView):
         response.delete_cookie('jwt')
         return response
 
+class EtudiantViewSet(viewsets.ModelViewSet):
+    queryset = Etudiant.objects.all()
+    serializer_class = EtudiantSerializer
+class OrientationViewSet(viewsets.ModelViewSet):
+    queryset = Orientation.objects.all()
+    serializer_class = OrientationSerializer
+class CheckOrientationView(APIView):
+    def get(self, request, user_id):
+        try:
+            user = CustomUser.objects.get(id_u=user_id)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        etudiant = Etudiant.objects.filter(email=user.email).first()
+        if not etudiant:
+            return Response({"error": "No associated student found for this user"}, status=status.HTTP_404_NOT_FOUND)
+        orientation_exists = Orientation_F.objects.filter(etudiant=etudiant).exists()
+        if orientation_exists:
+            return Response({"statu": "orienté"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"statu": "non_orienté"}, status=status.HTTP_200_OK)
