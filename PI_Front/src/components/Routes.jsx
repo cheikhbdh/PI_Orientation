@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import ProtectedRoute from './protectRoute';
 import AdminLayout from './layout/AdminLayout';
 import AcceuilLayout from './layout/AcceuilLayout';
 import LoginLayout from './layout/LoginLayout';
@@ -7,8 +8,6 @@ import HomePage from '../pages/Acceil/acceil';
 import Login from '../pages/Login/login';
 import Signup from '../pages/Signup/signup';
 import Dashboard from '../pages/Dashboard';
-import Dashboardteam from '../pages/Dashbordteams'
-import Etudiant from '../pages/Jery/Jery';
 import Challenges from '../pages/Challenges/Challenges';
 import Participer_challenge from '../pages/Particuper_au_challenges/particuper_au_challenge';
 import Teams from '../pages/Teams/Teams';
@@ -27,56 +26,20 @@ const Routes = () => {
                     <Login />
                     </AcceuilLayout>
                 </Route>
-                <Route path='/Home' exact>
-                    <LoginLayout>
-                        <HomePage />
-                    </LoginLayout>
-                </Route>
                 <Route path='/register' exact>
                     <LoginLayout>
                         <Signup />
                     </LoginLayout>
                 </Route>
-                <Route path='/travon' exact>
-                    <EquipesLayout>
-                        <TravonDevoir />
-                    </EquipesLayout>
-                </Route>
-                <Route path='/personne' exact>
-                    <EquipesLayout>
-                        <ListeMembres />
-                    </EquipesLayout>
-                </Route>
-                <Route path='/team' exact>
-                    <EquipesLayout>
-                        <Dashboardteam />
-                    </EquipesLayout>
-                </Route>
-                <Route path='/dashboard' exact>
-                    <AdminLayout>
-                        <Dashboard />
-                    </AdminLayout>
-                </Route>
-                <Route path='/jery'>
-                    <AdminLayout>
-                        <Jery />
-                    </AdminLayout>
-                </Route>
-                <Route path='/challenges'>
-                    <AdminLayout>
-                        <Challenges />
-                    </AdminLayout>
-                </Route>
-                <Route path='/equipes'>
-                    <AdminLayout>
-                        <Teams />
-                    </AdminLayout>
-                </Route>
-                <Route path='/evaluation'>
-                    <AdminLayout>
-                        <Evaluations />
-                    </AdminLayout>
-                </Route>
+  
+                <ProtectedRoute path='/Home' exact component={HomePage} layout={AcceuilLayout}/>
+                <ProtectedRoute path='/dashboard' exact component={Dashboard} layout={AdminLayout} />
+                <ProtectedRoute path='/jery' component={Jery} layout={AdminLayout} />
+                <ProtectedRoute path='/challenges' component={Challenges} layout={AdminLayout} />
+                <ProtectedRoute path='/equipes' component={Teams} layout={AdminLayout} />
+                <ProtectedRoute path='/evaluation' component={Evaluations} layout={AdminLayout} />
+                <ProtectedRoute path='/persone' component={ListeMembres} layout={AdminLayout} />
+                <ProtectedRoute path='/travon' component={TravonDevoir} layout={AdminLayout} />
             </Switch>
         </Router>
     );

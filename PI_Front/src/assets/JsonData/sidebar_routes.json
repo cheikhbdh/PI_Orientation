@@ -10,18 +10,18 @@
         "icon": "bx bx-user-pin"
     },
     {
-        "display_name": "Equipes",
+        "display_name": "choix des filieres",
         "route": "/equipes",
         "icon": "bx bx-user-pin"
     },
     
     {
-        "display_name": "Challenges",
+        "display_name": "Orinetation finale",
         "route": "/challenges",
         "icon": "bx bx-envelope-open"
     },
     {
-        "display_name": "Evaluations",
+        "display_name": "Gestion des utilsatuer",
         "route": "/evaluation",
         "icon": "bx bx-calendar-event"
     }

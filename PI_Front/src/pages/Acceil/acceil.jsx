@@ -1,12 +1,6 @@
-/* eslint-disable jsx-a11y/heading-has-content */
-/* eslint-disable react/jsx-no-undef */
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect ,useState} from "react";
-import Typed from "typed.js";
 import { BrowserRouter as Router, Link } from "react-router-dom";
-import { Container, Button,Form, Row, Col,Table, Card } from "react-bootstrap";
 import axios from "axios";
-import logo from "../../assets/images/logo.png";
 import "./acceil.css";
 
 const scrollToId = (id) => {
@@ -181,21 +175,77 @@ const ImageSection = () => (
       </div>
       </>
 );
-
 const LaodingPage = () => {
- 
+  const [isOriented, setIsOriented] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+
+  const [user, setUser] = useState(null);
+  const axiosInstance = axios.create({
+		withCredentials: true,
+	  });
+
+  useEffect(() => {
+    // Fetch user details
+    const fetchUserDetails = async () => {
+      const token=localStorage.getItem('token')
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      try {
+        const userResponse = await axiosInstance.get('http://127.0.0.1:8000/user/',{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'  
+        }
+        });
+        setUser(userResponse.data);
+        console.log(userResponse.data)
+        // Now fetch orientation status with user ID
+        checkOrientation(userResponse.data.id_u);
+      } catch (error) {
+        console.error('Failed to fetch user details:', error);
+      }
+    };
+
+    // Fetch orientation status
+    const checkOrientation = async (userId) => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/check-orientation/${userId}`); // Use user ID in the URL
+        if(response.data.statu==='orienter'){
+          setIsOriented(true)
+        }else{
+          console.log("ch")
+        };
+      } catch (error) {
+        console.error('Failed to fetch orientation status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isOriented) {
+    return (
+      <div className="container center-content landing-page">
+        <Navbar />
+        <div className="centered-message">
+          <h1>Vous avez déjà été orienté.</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container center-content landing-page">
       <Navbar />
-
-      
       <ImageSection />
-      
-     
     </div>
   );
 };
-
 
 export default LaodingPage;

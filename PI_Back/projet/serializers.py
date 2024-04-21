@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import CustomUser
+from .models import CustomUser,Demande,Etudiant,Orientation
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -34,3 +34,16 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+class DemandeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Demande
+        fields = ['id','idE','matricule', 'choix1', 'choix2', 'choix3']
+
+class EtudiantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Etudiant
+        fields = ['idE', 'matricule', 'email']
+class OrientationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orientation
+        fields = '__all__'
