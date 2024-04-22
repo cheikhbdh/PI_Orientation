@@ -25,6 +25,7 @@ export default function SignUp() {
         // Vérification des champs obligatoires
         if (!data.get('email') || !password || !data.get('confirmPassword') || !username) {
             setAlertMsg('Tous les champs sont obligatoires ! Veuillez remplir tous les champs requis.');
+            setAlertSeverity('error')
             setShowAlert(true);
             return;
         }
@@ -34,6 +35,7 @@ export default function SignUp() {
         if (!passwordRegex.test(password)) {
             setAlertMsg('Mot de passe faible ! Veuillez inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.');
             setShowAlert(true);
+            setAlertSeverity('error')
             return;
         }
 
@@ -42,6 +44,7 @@ export default function SignUp() {
         if (!usernameRegex.test(username)) {
             setAlertMsg('Nom d\'utilisateur invalide ! Veuillez utiliser uniquement des caractères alphanumériques.');
             setShowAlert(true);
+            setAlertSeverity('error')
             return;
         }
 
@@ -56,6 +59,7 @@ export default function SignUp() {
             if (response.status === 201) {
                 setAlertMsg('Inscription réussie ! Redirection...');
                 setShowAlert(true);
+                setAlertSeverity('success')
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 3000);
@@ -66,6 +70,7 @@ export default function SignUp() {
             console.error('Erreur d\'inscription :', error.response?.data);
             setAlertMsg('Inscription échouée ! Veuillez réessayer.');
             setShowAlert(true);
+            setAlertSeverity('error')
             setTimeout(() => {
                 setShowAlert(false);
             }, 5000);
@@ -91,7 +96,7 @@ export default function SignUp() {
                     Inscription
                 </Typography>
                 {showAlert && (
-                    <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+                    <Alert severity={alertSeverity} sx={{ width: '100%', mt: 2 }}>
                         {alertMsg}
                     </Alert>
                 )}

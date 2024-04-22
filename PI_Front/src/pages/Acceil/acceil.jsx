@@ -51,8 +51,50 @@ const Navbar = () => (
 
 
 
-const ImageSection = () => (
+const ImageSection = ({ userEmail, choice, readOnly = false  }) =>{
+  const [choices, setChoices] = useState({
+    choix1: choice ? choice.choix1 : '',
+    choix2: choice ? choice.choix2 : '',
+    choix3: choice ? choice.choix3 : '',
+  });
+
+ console.log(choices)
+  const handleChoice = (event) => {
+    if(!readOnly){
+    const { name, value } = event.target;
+    setChoices(prevChoices => {
+      const updatedChoices = { ...prevChoices, [name]: value };
+      console.log("Updated Choices:", updatedChoices); // Debugging
+      return updatedChoices;
+    });
+  }
+  };
+
+  const isChoiceSelected = (value) => {
+    return Object.values(choices).includes(value);
+  };
+  const matricule = userEmail?.substring(0, 5);
+  const submitChoices = async (event) => {
+    event.preventDefault();
+    
+    const dataWithMatricule = {
+      matricule,
+      ...choices
+    };
+    console.log(dataWithMatricule)
+    const endpoint = 'http://127.0.0.1:8000/choice/';
+    try {
+      const response = await axios.post(endpoint, dataWithMatricule);
+      console.log(response.data);
+      // Handle response or redirect as needed
+    } catch (error) {
+      console.error('Failed to submit choices:', error);
+      // Handle error (show error message to user)
+    }
+  };
+ return(
   <>
+  <form onSubmit={submitChoices} >
   <div className="container2">
         <div className="top-bar"></div>
         <div className="header">
@@ -62,20 +104,11 @@ const ImageSection = () => (
         </div>
         <div className="form-group">
           <div className="message">
-            Votre adresse e-mail (22003@supnum.mr) a été enregistrée lorsque
-            vous avez envoyé ce formulaire.
+            on prend Votre matricule  {matricule} a l'aide de votre email supnum 
           </div>
         </div>
       </div>
-      <div className="container2">
-        <div className="form-group2">
-          <b>
-            <label className="matricule-label">Matricule:</label>
-          </b>
-          <p>22003</p>
-          <div className="line"></div>
-        </div>
-      </div>
+     
       <div className="container2">
         <div className="priority">
           <label>
@@ -87,94 +120,31 @@ const ImageSection = () => (
             <div className="cell">Developpement (DSI)</div>
             <div className="cell">Réseaux (RSS)</div>
           </div>
-          <div className="rows">
-            <div className="cell">Choix 1</div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice1"
-                value="CNM"
-              />
-            </div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice1"
-                value="DSI"
-              />
-            </div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice1"
-                value="RSS"
-              />
-            </div>
-          </div>
-          <div className="rows">
-            <div className="cell">Choix 2</div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice2"
-                value="CNM"
-              />
-            </div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice2"
-                value="DSI"
-              />
-            </div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice2"
-                value="RSS"
-              />
-            </div>
-          </div>
-          <div className="rows">
-            <div className="cell">Choix 3</div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice3"
-                value="CNM"
-              />
-            </div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice3"
-                value="DSI"
-              />
-            </div>
-            <div className="cell">
-              <input
-                className="priority-input"
-                type="radio"
-                name="choice3"
-                value="RSS"
-              />
-            </div>
-          </div>
+          {['choix1', 'choix2', 'choix3'].map(choix => (
+                <div className="rows" key={choix}>
+                  <div className="cell">{`Choix ${choix[5]}`}</div>
+                  {['CNM', 'DSI', 'RSS'].map(filiere => (
+                    <div className="cell" key={`${choix}-${filiere}`}>
+                      <input
+                        className="priority-input"
+                        type="radio"
+                        name={choix}
+                        value={filiere}
+                        checked={choices[choix] === filiere}
+                        onChange={handleChoice}
+                        disabled={(isChoiceSelected(filiere) && choices[choix] !== filiere) || readOnly}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))}
         </div>
-        <button type="submit" className="submit-btn">
-          Envoyer
-        </button>
+        {!readOnly && <button type="submit" className="submit-btn">Envoyer</button>}
       </div>
+      </form>
       </>
 );
+};
 const AlreadyRespondedMessage = () => (
   <div className="already-responded-container">
     <div className="already-responded-header">
@@ -190,10 +160,29 @@ const AlreadyRespondedMessage = () => (
     </button>
   </div>
 );
+const ChoixMessage = ({ onShowChoices }) => (
+  <div className="container center-content landing-page">
+    <div className="already-responded-container">
+      <div className="already-responded-header">
+        Merci d'avoir rempli le formulaire FORMULE CHOIX DE LA FILIÈRE DE SPÉCIALITÉ
+      </div>
+      <div className="already-responded-body">
+        Voici ce que vous avez choisi: 
+      </div>
+      <button className="already-responded-btn" onClick={onShowChoices}>
+        Afficher la note
+      </button>
+    </div>
+  </div>
+);
+
+
 
 const LaodingPage = () => {
-  const [isOriented, setIsOriented] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [choices, setChoices] = useState(null);
+  const [showChoices, setShowChoices] = useState(false);
+  const [status, setStatus] = useState(null);
   
 
   const [user, setUser] = useState(null);
@@ -226,11 +215,8 @@ const LaodingPage = () => {
     const checkOrientation = async (userId) => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/check-orientation/${userId}`); // Use user ID in the URL
-        if(response.data.statu==='orienté'){
-          setIsOriented(true)
-        }else{
-          console.log("ch")
-        };
+        setStatus(response.data.statu);
+        setChoices(response.data.choix);
       } catch (error) {
         console.error('Failed to fetch orientation status:', error);
       } finally {
@@ -244,12 +230,29 @@ const LaodingPage = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  if (isOriented) {
+  if (showChoices) {
     return (
       <div className="container center-content landing-page">
         <Navbar />
-        <AlreadyRespondedMessage/>
+        <ImageSection userEmail={user?.email} choice={choices} readOnly={true} />
+      </div>
+    );
+  }
+  if (status === "1") {
+    return (
+      <div className="container center-content landing-page">
+        <Navbar />
+        <AlreadyRespondedMessage />
+      </div>
+    );
+  } else if (status === "2") {
+    return (
+      <div className="container center-content landing-page">
+        <Navbar />
+        <ChoixMessage 
+        onShowChoices={() => setShowChoices(true)} 
+        choices={choices}
+      />
       </div>
     );
   }
@@ -257,7 +260,7 @@ const LaodingPage = () => {
   return (
     <div className="container center-content landing-page">
       <Navbar />
-      <ImageSection />
+      <ImageSection userEmail={user?.email} />
     </div>
   );
 };

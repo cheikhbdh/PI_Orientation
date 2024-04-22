@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.exceptions import AuthenticationFailed
-from .serializers import UserSerializer,EtudiantSerializer,OrientationSerializer
-from .models import CustomUser,Etudiant,Orientation,Orientation_F
+from .serializers import UserSerializer,EtudiantSerializer,OrientationSerializer,Choix_Serializer
+from .models import CustomUser,Etudiant,Orientation,Orientation_F,CHOIX_FILIERE
 import jwt, datetime
 from rest_framework import status
 from rest_framework import viewsets
@@ -87,10 +87,25 @@ class CheckOrientationView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         etudiant = Etudiant.objects.filter(email=user.email).first()
+        
         if not etudiant:
             return Response({"error": "No associated student found for this user"}, status=status.HTTP_404_NOT_FOUND)
         orientation_exists = Orientation_F.objects.filter(etudiant=etudiant).exists()
+        choix_exists = CHOIX_FILIERE.objects.filter(idE=etudiant).exists()
+        choix=CHOIX_FILIERE.objects.filter(idE=etudiant).first()
+        choi_etudiant=Choix_Serializer(choix)
         if orientation_exists:
-            return Response({"statu": "orienté"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"statu": "non_orienté"}, status=status.HTTP_200_OK)
+            return Response({"statu": "1"}, status=status.HTTP_200_OK)
+        elif choix_exists:
+            
+            return Response({"statu": "2","choix":choi_etudiant.data}, status=status.HTTP_200_OK)
+        else :
+            return Response({"statu": "3"}, status=status.HTTP_200_OK)
+
+class ChoixView(APIView):
+    def post(self, request):
+        serializer = Choix_Serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
