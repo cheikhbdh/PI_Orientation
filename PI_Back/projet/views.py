@@ -8,14 +8,27 @@ import jwt, datetime
 from rest_framework import status
 from rest_framework import viewsets
 
+# class RegisterView(APIView):
+#  def post(self, request):
+#         serializer = UserSerializer(data=request.data)
+#         if serializer.is_valid():
+#           serializer.save()
+#           return Response(serializer.data, status=status.HTTP_201_CREATED)  # 201 Created
+#         return Response({"error": "login  ou mots de pass n'est pas valide"}, status=status.HTTP_400_BAD_REQUEST)
 class RegisterView(APIView):
  def post(self, request):
+        # Vérifier d'abord si l'email est dans la table de vérification
+        email = request.data.get('email')
+        if not Etudiant.objects.filter(email=email).exists():
+            return Response({"error": "Email not verified or not allowed for registration."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Si l'email est vérifié, procéder à l'enregistrement de l'utilisateur
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
           serializer.save()
           return Response(serializer.data, status=status.HTTP_201_CREATED)  # 201 Created
-        return Response({"error": "login  ou mots de pass n'est pas valide"}, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response({"error": "cette email est deja exist"}, status=status.HTTP_400_BAD_REQUEST)
+ 
 class LoginView(APIView):
     def post(self, request):
         login_or_email = request.data.get('login_or_email')
