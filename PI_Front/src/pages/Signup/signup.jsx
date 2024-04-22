@@ -27,6 +27,7 @@ export default function SignUp() {
             setAlertMsg('Tous les champs sont obligatoires ! Veuillez remplir tous les champs requis.');
             setAlertSeverity('error')
             setShowAlert(true);
+            setAlertSeverity('error')
             return;
         }
 
@@ -64,11 +65,11 @@ export default function SignUp() {
                     window.location.href = '/';
                 }, 3000);
             } else {
-                console.log("Inscription réussie");
+                
             }
         } catch (error) {
             console.error('Erreur d\'inscription :', error.response?.data);
-            setAlertMsg('Inscription échouée ! Veuillez réessayer.');
+            setAlertMsg(error.response?.data.error);
             setShowAlert(true);
             setAlertSeverity('error')
             setTimeout(() => {
