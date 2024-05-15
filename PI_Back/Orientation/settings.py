@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'Orientation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Orientation',
+        'NAME': 'PIO',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',

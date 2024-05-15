@@ -30,26 +30,11 @@ class CustomUser(AbstractUser):
         verbose_name='user permissions',
         blank=True,
         help_text='Specific permissions for this user.',
-        related_name="customuser_set",  # Changed related_name to avoid clash
+        related_name="customuser_set",
         related_query_name="customuser",
     )
 
-class Demande(models.Model):
-    id = models.AutoField(primary_key=True)
-    idU = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Clé étrangère vers CustomUser
-    matricule = models.IntegerField()
-    CHOIX_CHOICES = [
-        ('dsi', 'DSI'),
-        ('rss', 'RSS'),
-        ('cnm', 'CNM'),
-    ]
-    choix1 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
-    choix2 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
-    choix3 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
 
-    def clean(self):
-        if self.choix1 == self.choix2 or self.choix1 == self.choix3 or self.choix2 == self.choix3:
-            raise ValidationError("Choices must be unique.")
 class Etudiant(models.Model):
     idE = models.AutoField(primary_key=True)
     matricule = models.IntegerField(unique=True)
@@ -86,3 +71,18 @@ class Orientation_F(models.Model):
 
     def _str_(self):
         return f"{self.filiere} - {self.etudiant.email}"
+class CHOIX_FILIERE(models.Model):
+    id = models.AutoField(primary_key=True)
+    idE = models.ForeignKey(Etudiant, on_delete=models.CASCADE) 
+    CHOIX_CHOICES = [
+        ('DSI', 'DSI'),
+        ('RSS', 'RSS'),
+        ('CNM', 'CNM'),
+    ]
+    choix1 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
+    choix2 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
+    choix3 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
+
+    def clean(self):
+        if self.choix1 == self.choix2 or self.choix1 == self.choix3 or self.choix2 == self.choix3:
+            raise ValidationError("Choices must be unique.")

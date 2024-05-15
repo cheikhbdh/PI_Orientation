@@ -254,7 +254,7 @@ label {
   margin-right: 20px;
 }
 .submit-btn {
-  background-color: #5c6bc0;
+  background-color: #735cc0;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -300,4 +300,32 @@ label {
   font-size: 18px;
   color: red;
   margin-left: 5px;
+}
+.already-responded-container {
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  /* Add other styles to match the image */
+}
+
+.already-responded-header {
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 15px;
+  /* Add other styles to match the image */
+}
+
+.already-responded-body {
+  margin-bottom: 20px;
+  /* Add other styles to match the image */
+}
+
+.already-responded-btn {
+  background-color: purple; /* Match the color from your image */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+  /* Add other styles to match the image */
 }

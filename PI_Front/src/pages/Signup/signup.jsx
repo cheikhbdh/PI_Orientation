@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -18,34 +19,59 @@ export default function SignUp() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log('Form submitted');
-        console.log('Email:', data.get('email'));
-		
+        const password = data.get('password');
+        const username = data.get('username');
+
+        // Vérification des champs obligatoires
+        if (!data.get('email') || !password || !data.get('confirmPassword') || !username) {
+            setAlertMsg('Tous les champs sont obligatoires ! Veuillez remplir tous les champs requis.');
+            setAlertSeverity('error')
+            setShowAlert(true);
+            setAlertSeverity('error')
+            return;
+        }
+
+        // Validation du mot de passe
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            setAlertMsg('Mot de passe faible ! Veuillez inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.');
+            setShowAlert(true);
+            setAlertSeverity('error')
+            return;
+        }
+
+        // Validation du nom d'utilisateur
+        const usernameRegex = /^[a-zA-Z0-9]+$/;
+        if (!usernameRegex.test(username)) {
+            setAlertMsg('Nom d\'utilisateur invalide ! Veuillez utiliser uniquement des caractères alphanumériques.');
+            setShowAlert(true);
+            setAlertSeverity('error')
+            return;
+        }
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/register/', {
                 email: data.get('email'),
-                login: data.get('username'),
-                password: data.get('password'),
+                login: username,
+                password: password,
                 confirm_password: data.get('confirmPassword')
             });
 
             if (response.status === 201) {
-                setAlertMsg('Registration successful! Redirecting...');
+                setAlertMsg('Inscription réussie ! Redirection...');
                 setShowAlert(true);
+                setAlertSeverity('success')
                 setTimeout(() => {
                     window.location.href = '/';
-                }, 3000);  // Redirect after 3 seconds
+                }, 3000);
             } else {
-                setAlertMsg(response.error);
-				setAlertSeverity('error');
+                
             }
         } catch (error) {
-            console.error('register error:', error.response?.data);
+            console.error('Erreur d\'inscription :', error.response?.data);
             setAlertMsg(error.response?.data.error);
-			setAlertSeverity('error');
             setShowAlert(true);
-            // Optionally reset alert visibility after some time
+            setAlertSeverity('error')
             setTimeout(() => {
                 setShowAlert(false);
             }, 5000);
@@ -53,7 +79,7 @@ export default function SignUp() {
     };
 
     const buttonStyle = {
-        // Your button styles here
+        // Vos styles de bouton ici
     };
 
     return (
@@ -68,7 +94,7 @@ export default function SignUp() {
                 }}
             >
                 <Typography component="h1" variant="h5">
-                    Sign Up
+                    Inscription
                 </Typography>
                 {showAlert && (
                     <Alert severity={alertSeverity} sx={{ width: '100%', mt: 2 }}>
@@ -81,7 +107,7 @@ export default function SignUp() {
                         required
                         fullWidth
                         id="email"
-                        label="Email Address"
+                        label="Adresse e-mail"
                         name="email"
                         autoComplete="email"
                     />
@@ -90,7 +116,7 @@ export default function SignUp() {
                         required
                         fullWidth
                         id="username"
-                        label="Username"
+                        label="Nom d'utilisateur"
                         name="username"
                         autoComplete="username"
                     />
@@ -99,7 +125,7 @@ export default function SignUp() {
                         required
                         fullWidth
                         name="password"
-                        label="Password"
+                        label="Mot de passe"
                         type="password"
                         id="password"
                         autoComplete="new-password"
@@ -109,7 +135,7 @@ export default function SignUp() {
                         required
                         fullWidth
                         name="confirmPassword"
-                        label="Confirm Password"
+                        label="Confirmer le mot de passe"
                         type="password"
                         id="confirmPassword"
                         autoComplete="new-password"
@@ -120,12 +146,12 @@ export default function SignUp() {
                         variant="contained"
                         sx={buttonStyle}
                     >
-                        Sign Up
+                        S'inscrire
                     </Button>
                     <Grid container justifyContent="space-between">
                         <Grid item>
                             <Link href="/" variant="body2">
-                                {"you already have an account? Sign in"}
+                                {"Vous avez déjà un compte ? Connectez-vous"}
                             </Link>
                         </Grid>
                     </Grid>

@@ -2,23 +2,33 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.exceptions import AuthenticationFailed
-from .serializers import UserSerializer,EtudiantSerializer,OrientationSerializer
-from .models import CustomUser,Etudiant,Orientation,Orientation_F
+from .serializers import UserSerializer,EtudiantSerializer,OrientationSerializer,Choix_Serializer
+from .models import CustomUser,Etudiant,Orientation,Orientation_F,CHOIX_FILIERE
 import jwt, datetime
 from rest_framework import status
 from rest_framework import viewsets
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from Orientation.settings import EMAIL_HOST_USER
+
+# class RegisterView(APIView):
+#  def post(self, request):
+#         serializer = UserSerializer(data=request.data)
+#         if serializer.is_valid():
+#           serializer.save()
+#           return Response(serializer.data, status=status.HTTP_201_CREATED)  # 201 Created
+#         return Response({"error": "login  ou mots de pass n'est pas valide"}, status=status.HTTP_400_BAD_REQUEST)
 class RegisterView(APIView):
  def post(self, request):
+        # Vérifier d'abord si l'email est dans la table de vérification
+        email = request.data.get('email')
+        if not Etudiant.objects.filter(email=email).exists():
+            return Response({"error": "Email not verified or not allowed for registration."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Si l'email est vérifié, procéder à l'enregistrement de l'utilisateur
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
           serializer.save()
           return Response(serializer.data, status=status.HTTP_201_CREATED)  # 201 Created
-        return Response({"error": "login  ou mots de pass n'est pas valide"}, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response({"error": "cette email est deja exist"}, status=status.HTTP_400_BAD_REQUEST)
+ 
 class LoginView(APIView):
     def post(self, request):
         login_or_email = request.data.get('login_or_email')
@@ -90,30 +100,25 @@ class CheckOrientationView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         etudiant = Etudiant.objects.filter(email=user.email).first()
+        
         if not etudiant:
             return Response({"error": "No associated student found for this user"}, status=status.HTTP_404_NOT_FOUND)
         orientation_exists = Orientation_F.objects.filter(etudiant=etudiant).exists()
+        choix_exists = CHOIX_FILIERE.objects.filter(idE=etudiant).exists()
+        choix=CHOIX_FILIERE.objects.filter(idE=etudiant).first()
+        choi_etudiant=Choix_Serializer(choix)
         if orientation_exists:
-            return Response({"statu": "orienté"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"statu": "non_orienté"}, status=status.HTTP_200_OK)
-class EnvoyerEmailEtudiantsAPIView(APIView):
+            return Response({"statu": "1"}, status=status.HTTP_200_OK)
+        elif choix_exists:
+            
+            return Response({"statu": "2","choix":choi_etudiant.data}, status=status.HTTP_200_OK)
+        else :
+            return Response({"statu": "3"}, status=status.HTTP_200_OK)
+
+class ChoixView(APIView):
     def post(self, request):
-        sujet = request.data.get('sujet')  # Obtenir le sujet de la requête POST
-        contenu = request.data.get('contenu')  # Obtenir le contenu de la requête POST
-
-        # Récupérer toutes les adresses e-mail des étudiants
-        etudiants = Etudiant.objects.all()
-        destinataires = [etudiant.email for etudiant in etudiants]
-
-        # Envoyer l'e-mail à tous les étudiants
-        send_mail(
-            sujet,  # Sujet de l'e-mail
-            strip_tags(contenu),  # Contenu de l'e-mail sans balises HTML
-            EMAIL_HOST_USER,  # Adresse e-mail de l'expéditeur
-            destinataires,  # Liste des adresses e-mail des destinataires
-            fail_silently=False,  # Ne pas échouer silencieusement en cas d'erreur
-            html_message=contenu,  # Contenu de l'e-mail avec balises HTML
-        )
-
-        return Response({'message': 'E-mails envoyés à tous les étudiants'}, status=status.HTTP_200_OK)
+        serializer = Choix_Serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
