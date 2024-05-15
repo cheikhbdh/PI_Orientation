@@ -7,7 +7,10 @@ from .models import CustomUser,Etudiant,Orientation,Orientation_F
 import jwt, datetime
 from rest_framework import status
 from rest_framework import viewsets
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from Orientation.settings import EMAIL_HOST_USER
 class RegisterView(APIView):
  def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -94,3 +97,23 @@ class CheckOrientationView(APIView):
             return Response({"statu": "orienté"}, status=status.HTTP_200_OK)
         else:
             return Response({"statu": "non_orienté"}, status=status.HTTP_200_OK)
+class EnvoyerEmailEtudiantsAPIView(APIView):
+    def post(self, request):
+        sujet = request.data.get('sujet')  # Obtenir le sujet de la requête POST
+        contenu = request.data.get('contenu')  # Obtenir le contenu de la requête POST
+
+        # Récupérer toutes les adresses e-mail des étudiants
+        etudiants = Etudiant.objects.all()
+        destinataires = [etudiant.email for etudiant in etudiants]
+
+        # Envoyer l'e-mail à tous les étudiants
+        send_mail(
+            sujet,  # Sujet de l'e-mail
+            strip_tags(contenu),  # Contenu de l'e-mail sans balises HTML
+            EMAIL_HOST_USER,  # Adresse e-mail de l'expéditeur
+            destinataires,  # Liste des adresses e-mail des destinataires
+            fail_silently=False,  # Ne pas échouer silencieusement en cas d'erreur
+            html_message=contenu,  # Contenu de l'e-mail avec balises HTML
+        )
+
+        return Response({'message': 'E-mails envoyés à tous les étudiants'}, status=status.HTTP_200_OK)

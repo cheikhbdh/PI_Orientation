@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, OrientationViewSet,CheckOrientationView
+from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, OrientationViewSet,CheckOrientationView,EnvoyerEmailEtudiantsAPIView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -32,5 +32,6 @@ urlpatterns = [
         path('logout/', LogoutView.as_view()),
         path('', include(router.urls)),
         path('check-orientation/<int:user_id>/', CheckOrientationView.as_view()),
+        path('envoyeremail/', EnvoyerEmailEtudiantsAPIView.as_view()),
     ])),
 ]
