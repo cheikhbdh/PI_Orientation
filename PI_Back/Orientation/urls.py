@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path, include
-from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, OrientationViewSet,CheckOrientationView,ChoixView
+from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, OrientationViewSet,CheckOrientationView,ChoixView,VerifierEmailView,EnvoyerEmailEtudiantsAPIView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -19,5 +19,7 @@ urlpatterns = [
         path('check-orientation/<int:user_id>/', CheckOrientationView.as_view()),
         path('choice/', ChoixView.as_view()),
         path('choice/<str:matricule>/', ChoixView.as_view(), name='choix-detail'),
+        path('verify-email/', VerifierEmailView.as_view(), name='verify-email'),
+        path('envoyeremail/', EnvoyerEmailEtudiantsAPIView.as_view()),
     ])),
 ]

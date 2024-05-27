@@ -61,6 +61,7 @@ class Orientation(models.Model):
     capacite_dsi = models.IntegerField()
     nombre_etudiants = models.IntegerField(default=0)
     date_fin = models.DateField(null=True, blank=True)
+    idu = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
 def clean(self):
         if self.date_fin and self.date_debut > self.date_fin:

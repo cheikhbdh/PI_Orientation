@@ -10,7 +10,12 @@ from rest_framework import viewsets
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
-
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from Orientation.settings import EMAIL_HOST_USER
+import random
 class IsAuthenticated(BasePermission):
  
 
@@ -66,6 +71,27 @@ class IsAdmin(BasePermission):
     
 
         return False
+class VerifierEmailView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+
+        # Check if the email is registered
+        etudiant = Etudiant.objects.filter(email=email).first()
+        if not etudiant:
+            return Response({"error": "Email not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate a 6-digit random code
+        verification_code = ''.join(random.choices('0123456789', k=6))
+
+        # Send the code to the email
+        send_mail(
+            'Email Verification Code',
+            f'Your email verification code is: {verification_code}',
+            '22034@supnum.mr',
+            [email],
+            fail_silently=False,
+        )
+        return Response({"verification_code": verification_code}, status=status.HTTP_200_OK)
 class RegisterView(APIView):
     def post(self, request):
             # Vérifier d'abord si l'email est dans la table de vérification
@@ -194,7 +220,27 @@ class ChoixView(APIView):
             return CHOIX_FILIERE.objects.get(idE=pk)
         except CHOIX_FILIERE.DoesNotExist:
             return Response({"error": "choix n'existe pas"}, status=status.HTTP_404_NOT_FOUND)
-from django.utils import timezone
+class EnvoyerEmailEtudiantsAPIView(APIView):
+    def post(self, request):
+        sujet = request.data.get('sujet')  # Obtenir le sujet de la requête POST
+        contenu = request.data.get('contenu')  # Obtenir le contenu de la requête POST
+
+        # Récupérer toutes les adresses e-mail des étudiants
+        etudiants = Etudiant.objects.all()
+        destinataires = [etudiant.email for etudiant in etudiants]
+
+        # Envoyer l'e-mail à tous les étudiants
+        send_mail(
+            sujet,  # Sujet de l'e-mail
+            strip_tags(contenu),  # Contenu de l'e-mail sans balises HTML
+            EMAIL_HOST_USER,  # Adresse e-mail de l'expéditeur
+            destinataires,  # Liste des adresses e-mail des destinataires
+            fail_silently=False,  # Ne pas échouer silencieusement en cas d'erreur
+            html_message=contenu, 
+        )
+
+        return Response({'message': 'E-mails envoyés à tous les étudiants'}, status=status.HTTP_200_OK)
+
 
 def update_campagne_status():
     campagnes = Orientation.objects.filter(status='ouvert')

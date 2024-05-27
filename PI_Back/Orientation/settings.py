@@ -161,8 +161,9 @@ AUTHENTICATION_BACKENDS = [
 
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.supnum.mr'  # Serveur SMTP de supnum.mr
+EMAIL_HOST = 'smtp.gmail.com'  # Serveur SMTP de supnum.mr
 EMAIL_PORT = 587  # Port SMTP pour supnum.mr
 EMAIL_USE_TLS = True  # Utiliser TLS pour la connexion sécurisée
-EMAIL_HOST_USER = '22034@supnum.mr'  # Votre adresse e-mail supnum
-EMAIL_HOST_PASSWORD = 'rozh etqf pxyz zoeq'  # Votre mot de passe e-mail supnum
+EMAIL_HOST_USER = 'meya.haroune@supnum.mr'  # Votre adresse e-mail supnum
+EMAIL_HOST_PASSWORD = 'jlkmfcpahrieveuc' # Votre mot de passe e-mail supnum
+EMAIL_USE_SSL= False
