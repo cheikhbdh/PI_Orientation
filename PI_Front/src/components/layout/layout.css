@@ -8,6 +8,16 @@
     min-height: 100vh;
 }
 
-.layout__content-main {
-    padding: 30px;
+.layout__content1 {
+    background-color: var(--second-bg);
+    min-height: 100vh;
 }
+
+.layout__content-main {
+    padding: 140px;
+}
+
+.layout__content-main1 {
+    padding: 110px;
+}
+

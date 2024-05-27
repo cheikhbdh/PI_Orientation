@@ -54,18 +54,19 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 REST_FRAMEWORK = {
-   'DEFAULT_PERMISSION_CLASSES': [
+   'DEFAULT_AUTHENTICATION_CLASSES': [
        
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
 
     ],
- 'DEFAULT_PERMISSION_CLASSES': [
+   'DEFAULT_PERMISSION_CLASSES': [
       'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated',
+    #   'rest_framework.permissions.IsAuthenticated',
         # ... other permission classes if needed
     ],
+   
 }
 
 ROOT_URLCONF = 'Orientation.urls'
@@ -100,7 +101,7 @@ WSGI_APPLICATION = 'Orientation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'PIO',
+        'NAME': 'test_pi',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',

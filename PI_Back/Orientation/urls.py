@@ -18,5 +18,6 @@ urlpatterns = [
         path('', include(router.urls)),
         path('check-orientation/<int:user_id>/', CheckOrientationView.as_view()),
         path('choice/', ChoixView.as_view()),
+        path('choice/<str:matricule>/', ChoixView.as_view(), name='choix-detail'),
     ])),
 ]

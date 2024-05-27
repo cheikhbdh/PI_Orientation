@@ -2,7 +2,10 @@ import React, { useEffect ,useState} from "react";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import axios from "axios";
 import "./acceil.css";
-
+import SuccessAlert from "../../components/Alert/succesalert";
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axiosInstance from "../../components/axiosinstance/axiosinstance";
 const scrollToId = (id) => {
   const section = document.getElementById(id);
   if (section) {
@@ -10,53 +13,37 @@ const scrollToId = (id) => {
   }
 };
 
-const Navbar = () => (
-  <nav className="navbar">
-    <div className="logo-container">
-      <img
-        src="https://z-p3-scontent.fnkc1-1.fna.fbcdn.net/v/t39.30808-6/272859844_106161358642329_679821423659054157_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeHnJ1X4gnaKD_sQUt5pSvICl8jn3QeNjVCXyOfdB42NUHhnDylvLdv6f8c2076jANNDvtGd_1oHm91EDknehYIk&_nc_ohc=lV79L-EJD7oAb5ctBbn&_nc_pt=1&_nc_zt=23&_nc_ht=z-p3-scontent.fnkc1-1.fna&oh=00_AfBJJ2Hh9V3bd2RK5_c3JCXFAcs2iYNP9Z1MutCNrz1TzA&oe=66213A8F"
-        alt="PRMT Logo"
-        className="logo sc"
-      />
-      <div className="scc">
-        <p className="s1">Orientation</p>
-        <p className="s2">
-          Plateforme développée par <b>SUPNUM</b>
-        </p>
-      </div>
-    </div>
-    <ul className="navbar-nav">
-      <li className="nav-item">
-        <a
-          onClick={() => scrollToId("home")}
-          className="nav-link home"
-          href="#home"
-        >
-          <i className="fas fa-house"></i>Accueil
-        </a>
-      </li>
-      
-
-      <li className="nav-item">
-        <Link to="/" className="nav-link home">
-          <i className="fa-solid fa-right-to-bracket"></i>deconection
-        </Link>
-      </li>
-    </ul>
-  </nav>
-);
 
 
 
 
 
 
-const ImageSection = ({ userEmail, choice, readOnly = false  }) =>{
+
+const ImageSection = ({ userEmail,isCampagneOuverte, choice, readOnly = false ,onModifyChoices ,modifyChoices}) =>{
   const [choices, setChoices] = useState({
     choix1: choice ? choice.choix1 : '',
     choix2: choice ? choice.choix2 : '',
     choix3: choice ? choice.choix3 : '',
   });
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const matricule = userEmail?.substring(0, 5);
+  const submitModifiedChoices = async () => {
+    const dataWithMatricule = {
+      matricule:matricule,
+      ...choices
+    };
+    const endpoint = `choice/${matricule}/`; // L'URL de l'API pour la modification
+    try {
+      const response = await axiosInstance.put(endpoint, dataWithMatricule);
+      console.log(response.data);
+      setShowSuccessAlert(true); 
+    } catch (error) {
+      console.error('Failed to submit modified choices:', error);
+      // Gérer l'erreur (afficher un message d'erreur à l'utilisateur)
+    }
+  };
+  
 
  console.log(choices)
   const handleChoice = (event) => {
@@ -73,7 +60,32 @@ const ImageSection = ({ userEmail, choice, readOnly = false  }) =>{
   const isChoiceSelected = (value) => {
     return Object.values(choices).includes(value);
   };
-  const matricule = userEmail?.substring(0, 5);
+
+  const isAllChoicesSelected = () => {
+    return Object.values(choices).every(choice => choice !== '');
+  };
+
+  const headerStyle = {
+    color: 'red'
+  };
+  const resetChoices = () => {
+    setChoices({
+      choix1: '',
+      choix2: '',
+      choix3: '',
+    });
+  };
+  useEffect(() => {
+    if (showSuccessAlert) {
+      const timer = setTimeout(() => {
+        window.location.reload(); 
+      }, 3000);
+  
+      return () => clearTimeout(timer); 
+    }
+  }, [showSuccessAlert]);
+
+  
   const submitChoices = async (event) => {
     event.preventDefault();
     
@@ -82,20 +94,24 @@ const ImageSection = ({ userEmail, choice, readOnly = false  }) =>{
       ...choices
     };
     console.log(dataWithMatricule)
-    const endpoint = 'http://127.0.0.1:8000/choice/';
+    const endpoint = 'choice/';
     try {
-      const response = await axios.post(endpoint, dataWithMatricule);
+      const response = await axiosInstance.post(endpoint, dataWithMatricule);
       console.log(response.data);
+      setShowSuccessAlert(true);
       // Handle response or redirect as needed
     } catch (error) {
       console.error('Failed to submit choices:', error);
       // Handle error (show error message to user)
     }
+   
   };
  return(
   <>
   <form onSubmit={submitChoices} >
+  {!readOnly &&!showSuccessAlert&&!modifyChoices &&
   <div className="container2">
+ 
         <div className="top-bar"></div>
         <div className="header">
           <b>
@@ -108,8 +124,10 @@ const ImageSection = ({ userEmail, choice, readOnly = false  }) =>{
           </div>
         </div>
       </div>
-     
+}
       <div className="container2">
+      {showSuccessAlert&&!modifyChoices && <SuccessAlert message="Les choix ont été envoyés avec succès !" />}
+      {showSuccessAlert &&modifyChoices&& <SuccessAlert message="Les choix ont été modifier avec succès !" />}
         <div className="priority">
           <label>
             <b>Prière faire trois choix par ordre de priorité *</b>
@@ -139,41 +157,68 @@ const ImageSection = ({ userEmail, choice, readOnly = false  }) =>{
                 </div>
               ))}
         </div>
-        {!readOnly && <button type="submit" className="submit-btn">Envoyer</button>}
+        {!readOnly &&!showSuccessAlert&&!modifyChoices && <button type="submit" className="submit-btn">Envoyer</button>}
+        {modifyChoices && (
+  <button type="button" className="submit-btn" onClick={submitModifiedChoices}>
+    Soumettre les modifications
+  </button>
+)}
+        {!readOnly &&!showSuccessAlert && isAllChoicesSelected() && (
+          <button type="button" className="reset-btn" onClick={resetChoices}>
+             <FontAwesomeIcon icon={faSyncAlt} />
+          </button>
+        )}
       </div>
       </form>
+      {readOnly &&isCampagneOuverte&&<div className="contineur2"><div className="header">vous vouler modifier votre choix?{" "} <button className="already-responded-btn" onClick={onModifyChoices}>
+        modifier les choix
+      </button></div></div>}
+      {readOnly &&!isCampagneOuverte&&<div className="contineur2"><div className="header"  style={headerStyle}>vous ne peut pas modifier votre choix a cause de date limite termine ou l'dministrateur fermer cette fonctionaliter{" "} 
+  </div></div>}
+     
       </>
 );
 };
-const AlreadyRespondedMessage = () => (
-  <div className="already-responded-container">
-    <div className="already-responded-header">
-      Vous avez déjà répondu
-    </div>
-    <div className="already-responded-body">
-      Vous ne pouvez remplir ce formulaire qu'une seule fois.
-      <br />
-      Si vous pensez qu'il s'agit d'une erreur, contactez le propriétaire du formulaire.
-    </div>
-    <button className="already-responded-btn">
-      Afficher la note
-    </button>
-  </div>
-);
-const ChoixMessage = ({ onShowChoices }) => (
-  <div className="container center-content landing-page">
+const AlreadyRespondedMessage = ({ choices }) => {
+  const [showChoices, setShowChoices] = useState(false);
+
+  const toggleShowChoices = () => {
+    setShowChoices(!showChoices);
+  };
+
+  return (
     <div className="already-responded-container">
       <div className="already-responded-header">
-        Merci d'avoir rempli le formulaire FORMULE CHOIX DE LA FILIÈRE DE SPÉCIALITÉ
+        Vous avez déjà répondu
       </div>
       <div className="already-responded-body">
+      
+       
+    </div>
+    </div>
+  );
+};
+
+const ChoixMessage = ({campagne}) => (
+  <div className="container center-content landing-page">
+
+    
+    <div className="space-between"></div>
+    <div className="title" >
+    
+      <h1 >Merci d'avoir rempli le formulaire <span className="colored-title">{campagne.titre}</span></h1>
+    </div>
+    <div className="already-responded-container">
+    <div className="space-between"></div>
+      <div className="already-responded-body" >
         Voici ce que vous avez choisi: 
       </div>
-      <button className="already-responded-btn" onClick={onShowChoices}>
-        Afficher la note
-      </button>
-    </div>
+      <div className="arrow-down"></div>
+
   </div>
+</div>
+
+
 );
 
 
@@ -181,24 +226,22 @@ const ChoixMessage = ({ onShowChoices }) => (
 const LaodingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [choices, setChoices] = useState(null);
+  const [campagne, setcampagne] = useState(null);
+  const [date, setdate] = useState(null);
   const [showChoices, setShowChoices] = useState(false);
   const [status, setStatus] = useState(null);
-  
-
+  const [modifyChoices, setModifyChoices] = useState(false);
+  const token = localStorage.getItem('token');
+console.log(token)
   const [user, setUser] = useState(null);
-  const axiosInstance = axios.create({
-		withCredentials: true,
-	  });
 
   useEffect(() => {
     // Fetch user details
     const fetchUserDetails = async () => {
-      const token=localStorage.getItem('token')
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       try {
-        const userResponse = await axiosInstance.get('http://127.0.0.1:8000/user/',{
+        const userResponse = await axiosInstance.get('user/',{
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'  
         }
         });
@@ -214,52 +257,55 @@ const LaodingPage = () => {
     // Fetch orientation status
     const checkOrientation = async (userId) => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/check-orientation/${userId}`); // Use user ID in the URL
+        const response = await axiosInstance.get(`/check-orientation/${userId}`); 
         setStatus(response.data.statu);
+        if(response.data.choix){
         setChoices(response.data.choix);
+        setcampagne(response.data.campagne);
+        
+        setShowChoices(true);
+        }
+        setdate(response.data.campagne.date_fin)
       } catch (error) {
         console.error('Failed to fetch orientation status:', error);
-      } finally {
-        setIsLoading(false);
-      }
+      } 
     };
 
     fetchUserDetails();
   }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
+  
+  if (status==="4") {
+    return <div className="container center-content landing-page">
+      <div className="already-responded-header">L'orientation que vous avez demandée n'existe pas actuellement. Veuillez réessayer.</div></div>;
   }
   if (showChoices) {
     return (
       <div className="container center-content landing-page">
-        <Navbar />
-        <ImageSection userEmail={user?.email} choice={choices} readOnly={true} />
+         <div className="date-container"><h4><i>Date limite</i> : <span className="colored-date">{date}</span></h4></div>
+        <ChoixMessage campagne={campagne} choices={choices} />
+        <ImageSection
+        onModifyChoices={() => setModifyChoices(true)}
+          userEmail={user?.email}
+          choice={choices}
+          readOnly={!modifyChoices} 
+          isCampagneOuverte={campagne.status === "ouvert"}
+          modifyChoices={modifyChoices}// Utilisez l'état modifyChoices ici
+          
+        />
       </div>
     );
   }
   if (status === "1") {
     return (
       <div className="container center-content landing-page">
-        <Navbar />
         <AlreadyRespondedMessage />
       </div>
     );
-  } else if (status === "2") {
-    return (
-      <div className="container center-content landing-page">
-        <Navbar />
-        <ChoixMessage 
-        onShowChoices={() => setShowChoices(true)} 
-        choices={choices}
-      />
-      </div>
-    );
-  }
+  } 
 
   return (
     <div className="container center-content landing-page">
-      <Navbar />
+      <div className="date-container"><h4><i>Date limite</i> : <span className="colored-date">{date}</span></h4></div>
       <ImageSection userEmail={user?.email} />
     </div>
   );

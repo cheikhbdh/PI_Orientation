@@ -38,13 +38,26 @@ class CustomUser(AbstractUser):
 class Etudiant(models.Model):
     idE = models.AutoField(primary_key=True)
     matricule = models.IntegerField(unique=True)
+    nom = models.CharField(max_length=255 ,default='etudiant')
+    prenom = models.CharField(max_length=255 ,default='etudiant')
+    semestre = models.CharField(max_length=255 , default='s2')
+    annee = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
 
 class Orientation(models.Model):
     idO = models.AutoField(primary_key=True)
+    titre = models.CharField(max_length=255 ,default='choix')
     date_debut = models.DateField()
+    STATUS_CHOICES = [
+        ('ouvert', 'ouvert'),
+        ('pause', 'pause'),
+        ('fermer', 'fermer'),
+    ]
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='fermer')
     capacite_cnm = models.IntegerField()
     capacite_rss = models.IntegerField()
+    semestre = models.CharField(max_length=255 ,default='s2')
     capacite_dsi = models.IntegerField()
     nombre_etudiants = models.IntegerField(default=0)
     date_fin = models.DateField(null=True, blank=True)

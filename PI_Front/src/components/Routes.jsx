@@ -16,15 +16,16 @@ import EquipesLayout from './layout/EquipesLayout';
 import TravonDevoir from '../pages/Travon_Devoir/devoir';
 import ListeMembres from '../pages/ListeMembresEquipe/listemembreEquipe';
 import Evaluations from '../pages/Evaluations/evaluations';
+import PageNotFound from '../pages/page404/page404';
 
 const Routes = () => {
     return (
         <Router>
             <Switch>
                 <Route path='/' exact>
-                    <AcceuilLayout>
+                    <LoginLayout>
                     <Login />
-                    </AcceuilLayout>
+                    </LoginLayout>
                 </Route>
                 <Route path='/register' exact>
                     <LoginLayout>
@@ -32,14 +33,19 @@ const Routes = () => {
                     </LoginLayout>
                 </Route>
   
-                <ProtectedRoute path='/Home' exact component={HomePage} layout={AcceuilLayout}/>
-                <ProtectedRoute path='/dashboard' exact component={Dashboard} layout={AdminLayout} />
-                <ProtectedRoute path='/jery' component={Jery} layout={AdminLayout} />
-                <ProtectedRoute path='/challenges' component={Challenges} layout={AdminLayout} />
-                <ProtectedRoute path='/equipes' component={Teams} layout={AdminLayout} />
-                <ProtectedRoute path='/evaluation' component={Evaluations} layout={AdminLayout} />
-                <ProtectedRoute path='/persone' component={ListeMembres} layout={AdminLayout} />
+                <ProtectedRoute path='/Home' isadmin={false} exact component={HomePage} layout={AcceuilLayout}/>
+                <ProtectedRoute path='/dashboard' isadmin={false} exact component={Dashboard} layout={AdminLayout} />
+                <ProtectedRoute path='/jery' isadmin={false} component={Jery} layout={AdminLayout} />
+                <ProtectedRoute path='/challenges' isadmin={false} component={Challenges} layout={AdminLayout} />
+                <ProtectedRoute path='/equipes' isadmin={false} component={Teams} layout={AdminLayout} />
+                <ProtectedRoute path='/evaluation' isadmin={false} component={Evaluations} layout={AdminLayout} />
+                <ProtectedRoute path='/persone' isadmin={false} component={ListeMembres} layout={AdminLayout} />
                 <ProtectedRoute path='/travon' component={TravonDevoir} layout={AdminLayout} />
+                <Route path='*' exact>
+                    <LoginLayout>
+                        <PageNotFound />
+                    </LoginLayout>
+                </Route>
             </Switch>
         </Router>
     );

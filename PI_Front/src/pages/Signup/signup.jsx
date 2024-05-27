@@ -41,7 +41,7 @@ export default function SignUp() {
         }
 
         // Validation du nom d'utilisateur
-        const usernameRegex = /^[a-zA-Z0-9]+$/;
+        const usernameRegex = /^[a-zA-Z]+$/;
         if (!usernameRegex.test(username)) {
             setAlertMsg('Nom d\'utilisateur invalide ! Veuillez utiliser uniquement des caractères alphanumériques.');
             setShowAlert(true);

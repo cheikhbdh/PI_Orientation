@@ -1,0 +1,14 @@
+.success-alert {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .success-message {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  

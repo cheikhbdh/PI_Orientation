@@ -101,27 +101,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 			<Typography component="h1" variant="h5">
 			  connexion
 			</Typography>
-			{/* <GoogleLogin
-			  clientId="7873-0960-9645" // Remplacez par votre ID client obtenu de Google
-			  render={renderProps => (
-				<Button
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-                startIcon={
-					<Avatar sx={{ bgcolor: 'white', marginRight: 2 }}>
-					  <GoogleIcon sx={{ color: '#DB4437' }} /> 
-					</Avatar>
-				  }
-                sx={googleButtonStyle}
-                fullWidth
-              >
-                Continuer avec Google
-              </Button>
-			  )}
-			//   onSuccess={responseGoogle}
-			//   onFailure={failGoogle}
-			  cookiePolicy={'single_host_origin'}
-			/> */}
+			
 			<Typography sx={{ marginY: '8px' }}>or</Typography>
 			<Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
 			  <TextField

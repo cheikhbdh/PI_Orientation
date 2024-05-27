@@ -12,15 +12,38 @@
 }
 
 .form-group label {
-    display: block;
+    display: inline;
     font-weight: bold;
 }
 
-.form-group input[type="number"] {
-    width: 100%;
+.filiere-group input[type="number"] {
+    width: 30%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+.filiere-group input[type="number"] {
+    width: 30%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.ingroup{
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+/* .form-group input[type="text"] {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+} */
+.nubb{
+    
 }
 
 .checkbox-group label {
@@ -35,7 +58,10 @@
     width: 100px;
     margin-right: 10px;
 }
-
+.filiere-container {
+    display: flex;
+    justify-content: space-between;
+}
 .submit-btn {
     background-color: #007bff;
     color: #fff;
@@ -47,4 +73,29 @@
 
 .submit-btn:hover {
     background-color: #0056b3;
+}
+.select-style option {
+    padding: 8px;
+    background: white; /* Ensures a consistent background when expanded */
+}
+.select-style {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 50%;
+    background-color: white;
+    cursor: pointer;
+    appearance: none; /* Removes default styling by the browser */
+    -webkit-appearance: none; /* Specific for WebKit browsers */
+    -moz-appearance: none; /* Specific for Mozilla browsers */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M6%209L11%204H1L6%209Z%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+/* Style for focusing on the select box */
+.select-style:focus {
+    outline: none;
+    border-color: #66afe9;
+    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
 }
