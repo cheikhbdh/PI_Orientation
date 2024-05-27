@@ -57,6 +57,16 @@ class Etudiant(models.Model):
 
 class Orientation(models.Model):
     idO = models.AutoField(primary_key=True)
+    titre = models.CharField(max_length=255 ,default='choix')
+    date_debut = models.DateField()
+    STATUS_CHOICES = [
+        ('ouvert', 'ouvert'),
+        ('pause', 'pause'),
+        ('fermer', 'fermer'),
+    ]
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='fermer')
+
     date_debut = models.DateField()
     capacite_cnm = models.IntegerField()
     capacite_rss = models.IntegerField()

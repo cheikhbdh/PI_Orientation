@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'Orientation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Orientation',
+        'NAME': 'pio',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
@@ -163,6 +163,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Serveur SMTP de supnum.mr
 EMAIL_PORT = 587  # Port SMTP pour supnum.mr
 EMAIL_USE_TLS = True  # Utiliser TLS pour la connexion sécurisée
-EMAIL_HOST_USER = 'meya.haroune@supnum.mr'  # Votre adresse e-mail supnum
-EMAIL_HOST_PASSWORD = 'jlkmfcpahrieveuc' # Votre mot de passe e-mail supnum
-EMAIL_USE_SSL= False
+EMAIL_HOST_USER = '22034@supnum.mr'  # Votre adresse e-mail supnum
+EMAIL_HOST_PASSWORD = 'rozhetqfpxyzzoeq'
+
