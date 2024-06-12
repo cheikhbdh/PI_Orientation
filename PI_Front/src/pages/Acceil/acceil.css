@@ -3,6 +3,46 @@
   font-family: "poppins", sans-serif;
 }
 
+.container {
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+}
+
+.space-between {
+  margin-top: 50px; /* Ajustez la valeur selon vos besoins */
+}
+
+
+.title {
+  text-align: center;
+  margin-bottom: 20px; /* Marge en bas du titre */
+}
+
+.colored-title {
+  color: green;
+}
+.colored-date {
+
+  color: red;
+}
+
+.already-responded-container {
+  justify-content: space-between; /* Aligne les éléments sur les extrémités */
+}
+.date-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid green; /* Couleur de la flèche */
+  margin: auto 10px; /* Marge autour de la flèche */
+}
 
 body {
   margin: 0;
@@ -253,8 +293,23 @@ label {
 .priority label {
   margin-right: 20px;
 }
+.reset-btn {
+  background-color: #4caf50; /* Vert */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  float: right; /* Décalage vers la droite */
+}
+
+.reset-btn:hover {
+  background-color: #388e3c; /* Vert plus sombre au survol */
+}
 .submit-btn {
-  background-color: #5c6bc0;
+  background-color: #735cc0;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -300,4 +355,32 @@ label {
   font-size: 18px;
   color: red;
   margin-left: 5px;
+}
+.already-responded-container {
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  /* Add other styles to match the image */
+}
+
+.already-responded-header {
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 15px;
+  /* Add other styles to match the image */
+}
+
+.already-responded-body {
+  margin-bottom: 20px;
+  /* Add other styles to match the image */
+}
+
+.already-responded-btn {
+  background-color: purple; /* Match the color from your image */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+  /* Add other styles to match the image */
 }

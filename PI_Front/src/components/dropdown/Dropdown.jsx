@@ -1,7 +1,7 @@
 import React, {useRef} from 'react'
-
+import axiosInstance from '../axiosinstance/axiosinstance'
 import './dropdown.css'
-
+import { Link } from 'react-router-dom'
 const clickOutsideRef = (content_ref, toggle_ref) => {
     document.addEventListener('mousedown', (e) => {
         // user click toggle
@@ -17,7 +17,16 @@ const clickOutsideRef = (content_ref, toggle_ref) => {
 }
 
 const Dropdown = props => {
-
+    const handleLogout = async () => {
+        try {
+          // Effectuer une requête POST à votre API de déconnexion
+          const response = await axiosInstance.post('logout/');
+          localStorage.clear();
+        } catch (error) {
+          console.error('Erreur lors de la déconnexion:', error);
+          // Gérer l'erreur (afficher un message d'erreur à l'utilisateur, etc.)
+        }
+    }
     const dropdown_toggle_el = useRef(null)
     const dropdown_content_el = useRef(null)
 
@@ -36,10 +45,15 @@ const Dropdown = props => {
                     props.customToggle ? props.customToggle() : ''
                 }
             </button>
+            
             <div ref={dropdown_content_el} className="dropdown__content">
                 {
                     props.contentData && props.renderItems ? props.contentData.map((item, index) => props.renderItems(item, index)) : ''
-                }
+                   
+                } <Link to="/" onClick={handleLogout} > <div className="notification-item">
+                <i className="bx bx-log-out-circle bx-rotate-180"></i>
+                <span>logout</span>
+            </div></Link>
                 {
                     props.renderFooter ? (
                         <div className="dropdown__footer">
@@ -47,6 +61,7 @@ const Dropdown = props => {
                         </div>
                     ) : ''
                 }
+               
             </div>
         </div>
     )

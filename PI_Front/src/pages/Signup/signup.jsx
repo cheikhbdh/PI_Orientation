@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,45 +17,107 @@ export default function SignUp() {
     const [showAlert, setShowAlert] = React.useState(false);
     const [alertMsg, setAlertMsg] = React.useState('');
     const [alertSeverity, setAlertSeverity] = React.useState('success');
+    const [isVerificationStep, setIsVerificationStep] = React.useState(false);
+    const [verificationCode, setVerificationCode] = React.useState('');
+    const [generatedCode, setGeneratedCode] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [confirmPassword, setConfirmPassword] = React.useState('');
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log('Form submitted');
-        console.log('Email:', data.get('email'));
-		
 
-        try {
-            const response = await axios.post('http://127.0.0.1:8000/register/', {
-                email: data.get('email'),
-                login: data.get('username'),
-                password: data.get('password'),
-                confirm_password: data.get('confirmPassword')
-            });
+        // Step 1: Verify email
+        if (!isVerificationStep) {
+            const email = data.get('email');
+            const username = data.get('username');
+            const password = data.get('password');
+            const confirmPassword = data.get('confirmPassword');
 
-            if (response.status === 201) {
-                setAlertMsg('Registration successful! Redirecting...');
+            // Validate input fields
+            if (!email || !password || !confirmPassword || !username) {
+                setAlertMsg('Tous les champs sont obligatoires ! Veuillez remplir tous les champs requis.');
+                setAlertSeverity('error');
                 setShowAlert(true);
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 3000);  // Redirect after 3 seconds
-            } else {
-                setAlertMsg(response.error);
-				setAlertSeverity('error');
+                return;
             }
-        } catch (error) {
-            console.error('register error:', error.response?.data);
-            setAlertMsg(error.response?.data.error);
-			setAlertSeverity('error');
-            setShowAlert(true);
-            // Optionally reset alert visibility after some time
-            setTimeout(() => {
-                setShowAlert(false);
-            }, 5000);
+
+            // Validate password strength
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+            if (!passwordRegex.test(password)) {
+                setAlertMsg('Mot de passe faible ! Veuillez inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.');
+                setAlertSeverity('error');
+                setShowAlert(true);
+                return;
+            }
+
+            // Validate username
+            const usernameRegex = /^[a-zA-Z]+$/;
+            if (!usernameRegex.test(username)) {
+                setAlertMsg('Nom d\'utilisateur invalide ! Veuillez utiliser uniquement des caractères alphanumériques.');
+                setAlertSeverity('error');
+                setShowAlert(true);
+                return;
+            }
+
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/verify-email/', { email });
+
+                if (response.status === 200) {
+                    setGeneratedCode(response.data.verification_code);
+                    setIsVerificationStep(true);
+                    setEmail(email);
+                    setUsername(username);
+                    setPassword(password);
+                    setConfirmPassword(confirmPassword);
+                    setAlertMsg('Code de vérification envoyé à votre adresse e-mail.');
+                    setAlertSeverity('success');
+                    setShowAlert(true);
+                }
+            } catch (error) {
+                console.error('Erreur de vérification :', error.response?.data);
+                setAlertMsg(error.response?.data.error || 'Erreur lors de l\'envoi du code de vérification.');
+                setAlertSeverity('error');
+                setShowAlert(true);
+            }
+        } else {
+            // Step 2: Verify the code and register
+            if (verificationCode !== generatedCode) {
+                setAlertMsg('Code de vérification incorrect. Veuillez réessayer.');
+                setAlertSeverity('error');
+                setShowAlert(true);
+                return;
+            }
+
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/register/', {
+                    email,
+                    login: username,
+                    password,
+                    confirm_password: confirmPassword
+                });
+
+                if (response.status === 201) {
+                    setAlertMsg('Inscription réussie ! Redirection...');
+                    setAlertSeverity('success');
+                    setShowAlert(true);
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('Erreur d\'inscription :', error.response?.data);
+                setAlertMsg(error.response?.data.error);
+                setAlertSeverity('error');
+                setShowAlert(true);
+            }
         }
     };
 
     const buttonStyle = {
-        // Your button styles here
+        // Vos styles de bouton ici
     };
 
     return (
@@ -68,7 +132,7 @@ export default function SignUp() {
                 }}
             >
                 <Typography component="h1" variant="h5">
-                    Sign Up
+                    Inscription
                 </Typography>
                 {showAlert && (
                     <Alert severity={alertSeverity} sx={{ width: '100%', mt: 2 }}>
@@ -76,56 +140,73 @@ export default function SignUp() {
                     </Alert>
                 )}
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
-                        label="Username"
-                        name="username"
-                        autoComplete="username"
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="new-password"
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="confirmPassword"
-                        label="Confirm Password"
-                        type="password"
-                        id="confirmPassword"
-                        autoComplete="new-password"
-                    />
+                    {!isVerificationStep ? (
+                        <>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Adresse e-mail"
+                                name="email"
+                                autoComplete="email"
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="username"
+                                label="Nom d'utilisateur"
+                                name="username"
+                                autoComplete="username"
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Mot de passe"
+                                type="password"
+                                id="password"
+                                autoComplete="new-password"
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="confirmPassword"
+                                label="Confirmer le mot de passe"
+                                type="password"
+                                id="confirmPassword"
+                                autoComplete="new-password"
+                            />
+                        </>
+                    ) : (
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="verificationCode"
+                            label="Code de vérification"
+                            type="text"
+                            id="verificationCode"
+                            autoComplete="off"
+                            value={verificationCode}
+                            onChange={(e) => setVerificationCode(e.target.value)}
+                        />
+                    )}
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={buttonStyle}
                     >
-                        Sign Up
+                        {isVerificationStep ? "Vérifier le code" : "S'inscrire"}
                     </Button>
                     <Grid container justifyContent="space-between">
                         <Grid item>
                             <Link href="/" variant="body2">
-                                {"you already have an account? Sign in"}
+                                {"Vous avez déjà un compte ? Connectez-vous"}
                             </Link>
                         </Grid>
                     </Grid>

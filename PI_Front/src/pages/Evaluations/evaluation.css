@@ -11,28 +11,50 @@
     margin-bottom: 20px;
 }
 
+.form-group-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
 .form-group label {
     display: block;
     font-weight: bold;
 }
 
-.form-group input[type="number"] {
+.form-group input[type="date"], .form-group input[type="number"], .form-group select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
-.checkbox-group label {
-    margin-right: 10px;
+.students-count {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
 }
 
-.capacity-inputs {
+.checkbox-group {
     display: flex;
+    flex-direction: column;
 }
 
-.capacity-inputs input {
-    width: 100px;
+.filiere-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filiere-group input[type="text"], .filiere-group input[type="number"] {
     margin-right: 10px;
 }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import './topnav.css'
+ import './fil.css'
 
 import { Link } from 'react-router-dom'
 
@@ -11,7 +11,7 @@ import ThemeMenu from '../thememenu/ThemeMenu'
 import notifications from '../../assets/JsonData/notification.json'
 
 import user_image from '../../assets/images/im11.png'
-
+import log_image from '../../assets/images/sup.png'
 import user_menu from '../../assets/JsonData/user_menus.json'
 
 const curr_user = {
@@ -46,13 +46,23 @@ const renderUserMenu =(item, index) => (
     </Link>
 )
 
-const Topnav = () => {
+const Topnavvvv = () => {
     return (
-        <div className='topnav'>
-            <div className="topnav__search">
-                <input type="text" placeholder='Search here...' />
-                <i className='bx bx-search'></i>
-            </div>
+        <div className='topnav1'>
+            <div className="logo-container">
+      <img
+        src={log_image}
+        alt="PRMT Logo"
+        className="logo sc"
+      />
+      <div className="scc">
+        <p className="s1">Orientation</p>
+        <p className="s2">
+          Plateforme développée par <b>SUPNUM</b>
+        </p>
+      </div>
+    </div>
+           
             <div className="topnav__right">
                 <div className="topnav__right-item">
                     {/* dropdown here */}
@@ -80,4 +90,4 @@ const Topnav = () => {
     )
 }
 
-export default Topnav;
+export default Topnavvvv

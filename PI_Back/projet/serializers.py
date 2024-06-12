@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import CustomUser,Demande,Etudiant,Orientation
+from .models import CustomUser,CHOIX_FILIERE,Etudiant,Orientation 
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -34,10 +34,23 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
-class DemandeSerializer(serializers.ModelSerializer):
+class Choix_Serializer(serializers.ModelSerializer):
+    matricule = serializers.IntegerField(write_only=True)
+
     class Meta:
-        model = Demande
-        fields = ['id','idE','matricule', 'choix1', 'choix2', 'choix3']
+        model = CHOIX_FILIERE
+        fields = ['matricule', 'choix1', 'choix2', 'choix3']
+
+    def validate(self, attrs):
+        # Check if Etudiant with this matricule exists
+        try:
+            etudiant = Etudiant.objects.get(matricule=attrs['matricule'])
+        except Etudiant.DoesNotExist:
+            raise serializers.ValidationError("No student found with this matricule")
+        attrs.pop('matricule')
+        attrs['idE'] = etudiant
+
+        return attrs
 
 class EtudiantSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,4 +59,6 @@ class EtudiantSerializer(serializers.ModelSerializer):
 class OrientationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orientation
-        fields = '__all__'
+        fields = ['idO','titre','date_debut','capacite_cnm', 'capacite_dsi','capacite_rss','nombre_etudiants','date_fin','idu']
+
+

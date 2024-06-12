@@ -1,12 +1,15 @@
 import React from 'react';
-
+import TopNavvvv from '../Topnav1/top';
 
 const AcceuilLayout = ({ children }) => {
     return (
 
-            <div className="content">
-                {children}
-            </div>
+        <div className="layout__content1">
+        <TopNavvvv />
+        <div className="layout__content-main1">
+        {children}
+        </div>
+    </div>
 
     );
 };
