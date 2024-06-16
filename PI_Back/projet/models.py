@@ -107,3 +107,17 @@ class CHOIX_FILIERE(models.Model):
     def clean(self):
         if self.choix1 == self.choix2 or self.choix1 == self.choix3 or self.choix2 == self.choix3:
             raise ValidationError("Choices must be unique.")
+class GridEvaluation(models.Model):
+    id = models.AutoField(primary_key=True)
+    titre = models.CharField(max_length=255)
+    critere1 = models.CharField(max_length=255)
+    critere2 = models.CharField(max_length=255)
+    critere3 = models.CharField(max_length=255)
+    critere4 = models.CharField(max_length=255)
+    critere5 = models.CharField(max_length=255)
+    critere6 = models.CharField(max_length=255)
+    critere7 = models.CharField(max_length=255)
+    annee = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.titre} - {self.annee}"

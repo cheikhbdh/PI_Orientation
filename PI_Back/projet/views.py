@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.exceptions import AuthenticationFailed
-from .serializers import UserSerializer, EtudiantSerializer, OrientationSerializer, Choix_Serializer
-from .models import CustomUser, Etudiant, Orientation, Orientation_F, CHOIX_FILIERE
+from .serializers import UserSerializer, EtudiantSerializer, OrientationSerializer, Choix_Serializer , GridEvaluationSerializer
+from .models import CustomUser, Etudiant, Orientation, Orientation_F, CHOIX_FILIERE , GridEvaluation
 import jwt, datetime
 from django.core.exceptions import ValidationError
 from rest_framework import status
@@ -267,3 +267,7 @@ class EnvoyerEmailEtudiantsAPIView(APIView):
         )
 
         return Response({'message': 'E-mails envoyés à tous les étudiants'}, status=status.HTTP_200_OK)
+
+class GridEvaluationViewSet(viewsets.ModelViewSet):
+    queryset = GridEvaluation.objects.all()
+    serializer_class = GridEvaluationSerializer

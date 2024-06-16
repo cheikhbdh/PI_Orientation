@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import CustomUser,CHOIX_FILIERE,Etudiant,Orientation 
+from .models import CustomUser,CHOIX_FILIERE,Etudiant,Orientation , GridEvaluation
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -62,3 +62,7 @@ class OrientationSerializer(serializers.ModelSerializer):
         fields = ['idO','titre','date_debut','capacite_cnm', 'capacite_dsi','capacite_rss','nombre_etudiants','date_fin','idu']
 
 
+class GridEvaluationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GridEvaluation
+        fields = ['id', 'titre', 'critere1', 'critere2', 'critere3', 'critere4', 'critere5', 'critere6', 'critere7', 'annee']

@@ -1,12 +1,13 @@
 
 from django.contrib import admin
 from django.urls import path, include
-from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, CheckOrientationView,ChoixView,VerifierEmailView,EnvoyerEmailEtudiantsAPIView,OrientationViewSet
+from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, CheckOrientationView,ChoixView,VerifierEmailView,EnvoyerEmailEtudiantsAPIView,OrientationViewSet,GridEvaluationViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'etudiants', EtudiantViewSet)
 router.register(r'orientations', OrientationViewSet)
+router.register(r'gridevaluation',GridEvaluationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
