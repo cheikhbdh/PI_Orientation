@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './evaluation.css';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -16,60 +17,79 @@ function Evaluations() {
     const axiosInstance = axios.create({
         withCredentials: true,
     });
-    const [numberOfStudents, setNumberOfStudents] = useState('');
+    const [numberOfStudents, setNumberOfStudents] = useState(0);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
-    const [userId, setUserId] = useState(null); // State to store user ID
+    const [userId, setUserId] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [sujet, setSujet] = useState('');
     const [contenu, setContenu] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [openOrientation, setOpenOrientation] = useState(null);
 
     useEffect(() => {
-        // Fetch user ID before rendering the component
         fetchUserId();
         fetchStudentsData();
+        fetchOpenOrientation();
+    }, []);
 
-        // Check if form was submitted previously and end date is in the future
-        const storedEndDate = localStorage.getItem('orientationEndDate');
-        if (storedEndDate && new Date(storedEndDate) > new Date()) {
-            setEndDate(storedEndDate);
+    useEffect(() => {
+        const savedOrientation = localStorage.getItem('openOrientation');
+        if (savedOrientation) {
+            const orientation = JSON.parse(savedOrientation);
+            setOpenOrientation(orientation);
+            setEndDate(orientation.date_fin);
             setFormSubmitted(true);
-            const storedMessage = localStorage.getItem(`successMessage-${storedEndDate}`);
-            if (storedMessage) {
-                setSuccessMessage(storedMessage);
-            }
         }
     }, []);
 
-    // Function to fetch user ID
     const fetchUserId = async () => {
-        const token=localStorage.getItem('token')
+        const token = localStorage.getItem('token');
         axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         try {
-            const userResponse = await axiosInstance.get('http://127.0.0.1:8000/user/',{
+            const userResponse = await axiosInstance.get('http://127.0.0.1:8000/user/', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'  
+                    'Content-Type': 'application/json'
                 }
             });
             setUserId(userResponse.data.id_u);
         } catch (error) {
-            console.error('Failed to fetch user details:', error);
+            console.error('Échec de la récupération des détails de l\'utilisateur :', error);
         }
     };
 
-    // Function to fetch students data
     const fetchStudentsData = () => {
         fetch('http://127.0.0.1:8000/etudiants/')
             .then(response => response.json())
             .then(data => {
-                // Update the number of students
                 setNumberOfStudents(data.length);
             })
-            .catch(error => console.error('Error fetching students:', error));
+            .catch(error => console.error('Erreur lors de la récupération des étudiants :', error));
+    };
+
+    const fetchOpenOrientation = async () => {
+        try {
+            const response = await axiosInstance.get('http://127.0.0.1:8000/orientations/', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const orientations = response.data;
+            const openOrientation = orientations.find(orientation => orientation.status === 'ouvert');
+
+            if (openOrientation) {
+                setOpenOrientation(openOrientation);
+                setEndDate(openOrientation.date_fin);
+                setFormSubmitted(true);
+                localStorage.setItem('openOrientation', JSON.stringify(openOrientation));
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des orientations :', error);
+        }
     };
 
     const handleCheckboxChange = (index) => {
@@ -89,7 +109,6 @@ function Evaluations() {
         updatedFilieres[index].capacity = event.target.value;
         setFilieres(updatedFilieres);
 
-        // If CNM and RSS capacities are set, adjust DSI capacity
         const cnmCapacity = parseInt(updatedFilieres.find(filiere => filiere.name === 'CNM').capacity) || 0;
         const rssCapacity = parseInt(updatedFilieres.find(filiere => filiere.name === 'RSS').capacity) || 0;
 
@@ -115,7 +134,59 @@ function Evaluations() {
     };
 
     const handleSubmission = () => {
-        setOpenDialog(true);
+        Swal.fire({
+            title: "Voulez-vous envoyer un email aux étudiants ?",
+            icon: "question",
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+            showCancelButton: true,
+            showCloseButton: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setOpenDialog(true);
+            } else {
+                setFormSubmitted(true);
+            }
+        });
+        submitFormData();
+    };
+
+    const submitFormData = async () => {
+        try {
+            const cnmFiliere = filieres.find(filiere => filiere.name === 'CNM');
+            const rssFiliere = filieres.find(filiere => filiere.name === 'RSS');
+            const dsiFiliere = filieres.find(filiere => filiere.name === 'DSI');
+
+            const capacite_cnm = cnmFiliere ? parseInt(cnmFiliere.capacity) : 0;
+            const capacite_rss = rssFiliere ? parseInt(rssFiliere.capacity) : 0;
+            const capacite_dsi = dsiFiliere ? parseInt(dsiFiliere.capacity) : 0;
+
+            const formData = {
+                titre: 'choix',
+                date_debut: startDate,
+                date_fin: endDate,
+                capacite_cnm,
+                capacite_rss,
+                capacite_dsi,
+                nombre_etudiants: numberOfStudents,
+                idu: userId
+            };
+
+            const response = await axiosInstance.post('http://127.0.0.1:8000/orientations/', formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setSuccessMessage('Formulaire soumis avec succès.');
+            setFormSubmitted(true);
+
+            console.log('Réponse du serveur :', response.data);
+        } catch (error) {
+            console.error('Échec de la soumission du formulaire :', error);
+            setErrorMessage('Erreur lors de la soumission du formulaire.');
+        }
     };
 
     const handleEmailSending = async () => {
@@ -125,12 +196,16 @@ function Evaluations() {
                 contenu: contenu
             };
 
-            await axios.post('http://127.0.0.1:8000/envoyeremail/', formData);
-            const storedEndDate = localStorage.getItem('orientationEndDate');
-            setSuccessMessage(`E-mail envoyé avec succès.`);
-            localStorage.setItem(`successMessage-${storedEndDate}`, successMessage);
+            await axiosInstance.post('http://127.0.0.1:8000/envoyeremail/', formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setSuccessMessage('E-mail envoyé avec succès.');
         } catch (error) {
-            console.error('Failed to send email:', error);
+            console.error('Échec de l\'envoi de l\'e-mail :', error);
             setErrorMessage('Erreur lors de l\'envoi de l\'e-mail.');
         }
         setOpenDialog(false);
@@ -143,64 +218,63 @@ function Evaluations() {
 
     return (
         <div className="form-container">
-            {!formSubmitted ? (
+            {openOrientation ? (
                 <div>
-                    <div className="form-group">
-                        <label>Date début :</label>
-                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <label>Filières :</label>
-                        <div className="checkbox-group">
-                            {filieres.map((filiere, index) => (
-                                <div key={index} className="filiere-group">
-                                    <input
-                                        type="checkbox"
-                                        checked={filiere.checked}
-                                        onChange={() => handleCheckboxChange(index)}
-                                    />
-                                    <input
-                                        type="text"
-                                        value={filiere.name}
-                                        onChange={(event) => handleFiliereChange(index, event)}
-                                    />
-                                    <input
-                                        type="number"
-                                        value={filiere.capacity}
-                                        placeholder="Capacité"
-                                        onChange={(event) => handleCapacityChange(index, event)}
-                                    />
-                                    {index > 2 && (
-                                        <button onClick={() => removeFiliere(index)}>×</button>
-                                    )}
-                                </div>
-                            ))}
-                            <button onClick={addFiliere}>Ajouter filière</button>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label>Nombre d'étudiants :</label>
-                        <input
-                            type="number"
-                            value={numberOfStudents}
-                            onChange={(e) => setNumberOfStudents(e.target.value)}
-                            placeholder="Nombre d'étudiants"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Date fin :</label>
-                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <button className="submit-btn" onClick={handleSubmission}>Soumettre</button>
-                    </div>
+                    <p>Orientation ouverte jusqu'au : {openOrientation.date_fin}</p>
                 </div>
             ) : (
-                <div>
-                    <p>Formulaire envoyé avec succès !</p>
-                    {/* Display the end date */}
-                    <p>Date fin du formulaire : {endDate}</p>
-                </div>
+                !formSubmitted && (
+                    <div>
+                        <div className="form-group">
+                            <label>Date début :</label>
+                            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        </div>
+                        <div className="form-group-row">
+                            <div className="form-group">
+                                <label>Nombre d'étudiants :</label>
+                                <div className="students-count">
+                                    {numberOfStudents}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label>Filières :</label>
+                            <div className="checkbox-group">
+                                {filieres.map((filiere, index) => (
+                                    <div key={index} className="filiere-group">
+                                        <input
+                                            type="checkbox"
+                                            checked={filiere.checked}
+                                            onChange={() => handleCheckboxChange(index)}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={filiere.name}
+                                            onChange={(event) => handleFiliereChange(index, event)}
+                                        />
+                                        <input
+                                            type="number"
+                                            value={filiere.capacity}
+                                            placeholder="Capacité"
+                                            onChange={(event) => handleCapacityChange(index, event)}
+                                        />
+                                        {index > 2 && (
+                                            <button onClick={() => removeFiliere(index)}>×</button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button onClick={addFiliere}>Ajouter filière</button>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label>Date fin :</label>
+                            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                        </div>
+                        <div className="form-group">
+                            <button className="submit-btn" onClick={handleSubmission}>Soumettre</button>
+                        </div>
+                    </div>
+                )
             )}
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>Envoyer un e-mail</DialogTitle>
@@ -225,7 +299,6 @@ function Evaluations() {
                     <button onClick={handleEmailSending}>Envoyer</button>
                 </DialogActions>
             </Dialog>
-
         </div>
     );
 }

@@ -59,4 +59,6 @@ class EtudiantSerializer(serializers.ModelSerializer):
 class OrientationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orientation
-        fields = '__all__'
+        fields = ['idO','titre','date_debut','capacite_cnm', 'capacite_dsi','capacite_rss','nombre_etudiants','date_fin','idu']
+
+

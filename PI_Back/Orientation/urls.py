@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path, include
-from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, OrientationViewSet,CheckOrientationView,ChoixView,VerifierEmailView,EnvoyerEmailEtudiantsAPIView
+from projet.views import RegisterView, LoginView, UserView, LogoutView, EtudiantViewSet, CheckOrientationView,ChoixView,VerifierEmailView,EnvoyerEmailEtudiantsAPIView,OrientationViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
