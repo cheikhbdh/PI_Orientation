@@ -1,0 +1,66 @@
+/* challenges.css */
+.challenges-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .import-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .import-button:hover {
+    background-color: #45a049;
+  }
+  
+  .important-message {
+    color: #ff0000;
+    font-weight: bold;
+    margin-left: 20px;
+  }
+  
+  .evaluation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .evaluation-table th, .evaluation-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .evaluation-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .evaluation-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .evaluation-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .evaluation-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .MuiDialog-paper {
+    width: 100%;
+    max-width: 600px;
+  }
+  

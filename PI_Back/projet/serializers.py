@@ -35,12 +35,13 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 class Choix_Serializer(serializers.ModelSerializer):
-    matricule = serializers.IntegerField(write_only=True)
+    matricule = serializers.SerializerMethodField()
 
     class Meta:
         model = CHOIX_FILIERE
-        fields = ['matricule', 'choix1', 'choix2', 'choix3']
-
+        fields = ['matricule','idc', 'choix1', 'choix2', 'choix3']
+    def get_matricule(self, obj):
+        return obj.idE.matricule
     def validate(self, attrs):
         # Check if Etudiant with this matricule exists
         try:
@@ -55,11 +56,11 @@ class Choix_Serializer(serializers.ModelSerializer):
 class EtudiantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Etudiant
-        fields = ['idE', 'matricule', 'email']
+        fields = '__all__'
 class OrientationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orientation
-        fields = ['idO','titre','date_debut','capacite_cnm', 'capacite_dsi','capacite_rss','nombre_etudiants','date_fin','idu']
+        fields = ['idO','titre','date_debut','status','capacite_cnm', 'capacite_dsi','capacite_rss','nombre_etudiants','date_fin','idu']
 
 
 class GridEvaluationSerializer(serializers.ModelSerializer):

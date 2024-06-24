@@ -60,7 +60,6 @@ class Orientation(models.Model):
     nombre_etudiants = models.IntegerField(default=0)
     date_fin = models.DateField(null=True, blank=True)
     idu = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-
     def clean(self):
         if self.date_fin and self.date_debut > self.date_fin:
             raise ValidationError("La date de fin ne peut pas être antérieure à la date de début.")
@@ -68,8 +67,8 @@ class Orientation(models.Model):
         if self.capacite_cnm < 0 or self.capacite_rss < 0 or self.capacite_dsi < 0:
             raise ValidationError("Les capacités ne peuvent pas être négatives.")
 
-        if self.date_debut < timezone.now().date():
-            raise ValidationError("La date de début ne peut pas être dans le passé.")
+        # if self.date_debut < timezone.now().date():
+        #     raise ValidationError("La date de début ne peut pas être dans le passé.")
         
         # Vérifier qu'il n'y a pas d'autre orientation avec le statut 'ouvert'
         if self.status == 'ouvert':
@@ -89,6 +88,7 @@ class Orientation_F(models.Model):
     ]
     filiere = models.CharField(max_length=255,choices=FILIERE_CHOICES)
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE, related_name="orientations")
+    idO = models.ForeignKey(Orientation, on_delete=models.CASCADE)
 
     def _str_(self):
         return f"{self.filiere} - {self.etudiant.email}"
@@ -100,10 +100,11 @@ class CHOIX_FILIERE(models.Model):
         ('RSS', 'RSS'),
         ('CNM', 'CNM'),
     ]
+
     choix1 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
     choix2 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
     choix3 = models.CharField(max_length=20, choices=CHOIX_CHOICES)
-
+    idc = models.ForeignKey(Orientation,on_delete=models.CASCADE)
     def clean(self):
         if self.choix1 == self.choix2 or self.choix1 == self.choix3 or self.choix2 == self.choix3:
             raise ValidationError("Choices must be unique.")

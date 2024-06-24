@@ -1,6 +1,27 @@
-.delete-jery{
-    padding: 10px;
-    border-radius: 10px;
-    background-color: red;
-    color: #fff;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.import-container {
+    display: flex;
+    align-items: center;
+}
+
+input[type="file"] {
+    margin-right: 10px;
+}
+
+.import-button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.import-button:hover {
+    background-color: darkgreen;
 }

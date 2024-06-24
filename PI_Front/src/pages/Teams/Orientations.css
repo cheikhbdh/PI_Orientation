@@ -17,6 +17,21 @@
   color: #115293;
 }
 
+.details-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: transparent;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.details-button:hover {
+  color: #9a0007;
+}
+
 .close-button {
   display: flex;
   align-items: center;
@@ -53,7 +68,7 @@ th {
 }
 
 tr:hover {
-  background-color: #f1f1f1;
+  background-color: transparent; /* Ensure no hover color */
 }
 
 .page-header {

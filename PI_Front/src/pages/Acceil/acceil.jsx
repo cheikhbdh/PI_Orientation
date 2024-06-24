@@ -20,23 +20,27 @@ const scrollToId = (id) => {
 
 
 
-const ImageSection = ({ userEmail,isCampagneOuverte, choice, readOnly = false ,onModifyChoices ,modifyChoices}) =>{
+const ImageSection = ({ userEmail,campagne ,isCampagneOuverte, choice, readOnly = false ,onModifyChoices ,modifyChoices}) =>{
   const [choices, setChoices] = useState({
     choix1: choice ? choice.choix1 : '',
     choix2: choice ? choice.choix2 : '',
     choix3: choice ? choice.choix3 : '',
   });
+
+  const Campagne =campagne? campagne :0;
+  console.log("idcampagne:",Campagne);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const matricule = userEmail?.substring(0, 5);
   const submitModifiedChoices = async () => {
     const dataWithMatricule = {
-      matricule:matricule,
+      matricule,
+      idc:Campagne,
       ...choices
     };
     const endpoint = `choice/${matricule}/`; // L'URL de l'API pour la modification
     try {
       const response = await axiosInstance.put(endpoint, dataWithMatricule);
-      console.log(response.data);
+      // console.log(response.data);
       setShowSuccessAlert(true); 
     } catch (error) {
       console.error('Failed to submit modified choices:', error);
@@ -51,7 +55,7 @@ const ImageSection = ({ userEmail,isCampagneOuverte, choice, readOnly = false ,o
     const { name, value } = event.target;
     setChoices(prevChoices => {
       const updatedChoices = { ...prevChoices, [name]: value };
-      console.log("Updated Choices:", updatedChoices); // Debugging
+      // console.log("Updated Choices:", updatedChoices); // Debugging
       return updatedChoices;
     });
   }
@@ -91,6 +95,7 @@ const ImageSection = ({ userEmail,isCampagneOuverte, choice, readOnly = false ,o
     
     const dataWithMatricule = {
       matricule,
+      idc:Campagne,
       ...choices
     };
     console.log(dataWithMatricule)
@@ -228,6 +233,7 @@ const LaodingPage = () => {
   const [choices, setChoices] = useState(null);
   const [campagne, setcampagne] = useState(null);
   const [date, setdate] = useState(null);
+  const [idc, setidc] = useState(null);
   const [showChoices, setShowChoices] = useState(false);
   const [status, setStatus] = useState(null);
   const [modifyChoices, setModifyChoices] = useState(false);
@@ -261,11 +267,12 @@ console.log(token)
         setStatus(response.data.statu);
         if(response.data.choix){
         setChoices(response.data.choix);
+
         setcampagne(response.data.campagne);
-        
         setShowChoices(true);
         }
-        setdate(response.data.campagne.date_fin)
+        setcampagne(response.data.campagne);
+
       } catch (error) {
         console.error('Failed to fetch orientation status:', error);
       } 
@@ -281,15 +288,16 @@ console.log(token)
   if (showChoices) {
     return (
       <div className="container center-content landing-page">
-         <div className="date-container"><h4><i>Date limite</i> : <span className="colored-date">{date}</span></h4></div>
+         <div className="date-container"><h4><i>Date limite</i> : <span className="colored-date">{campagne?.date_fin}</span></h4></div>
         <ChoixMessage campagne={campagne} choices={choices} />
         <ImageSection
         onModifyChoices={() => setModifyChoices(true)}
           userEmail={user?.email}
           choice={choices}
           readOnly={!modifyChoices} 
+          campagne={campagne.idO}
           isCampagneOuverte={campagne.status === "ouvert"}
-          modifyChoices={modifyChoices}// Utilisez l'état modifyChoices ici
+          modifyChoices={modifyChoices}
           
         />
       </div>
@@ -305,8 +313,8 @@ console.log(token)
 
   return (
     <div className="container center-content landing-page">
-      <div className="date-container"><h4><i>Date limite</i> : <span className="colored-date">{date}</span></h4></div>
-      <ImageSection userEmail={user?.email} />
+      <div className="date-container"><h4><i>Date limite</i> : <span className="colored-date">{campagne?.date_fin}</span></h4></div>
+      <ImageSection userEmail={user?.email} campagne={campagne?.idO}/>
     </div>
   );
 };

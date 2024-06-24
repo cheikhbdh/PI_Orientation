@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import { Redirect } from 'react-router-dom';
+import axios from "axios";
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -7,34 +8,54 @@ import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import axiosInstance from "../../components/axiosinstance/axiosinstance";
 import './Orientations.css';
+import './choixFiliere.css';
 
 const Orientations = () => {
   const [orientations, setOrientations] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openCampagneDialog, setOpenCampagneDialog] = useState(false);
   const [selectedOrientation, setSelectedOrientation] = useState(null);
+  const [etudiants, setEtudiants] = useState([]);
   const [newOrientation, setNewOrientation] = useState({
     titre: '',
     date_debut: '',
     date_fin: '',
+    capacite_cnm: '',
+    capacite_dsi: '',
+    capacite_rss: '',
     nombre_etudiants: '',
+    idu: ''
   });
+  const [redirectTo, setRedirectTo] = useState(null);
 
   useEffect(() => {
     fetchOrientations();
+    fetchEtudiants();
   }, []);
 
   const fetchOrientations = () => {
     axiosInstance
-      .get('orientations/')
+      .get('http://127.0.0.1:8000/orientations/')
       .then((response) => {
         setOrientations(response.data);
       })
       .catch((error) => {
         console.error('Error fetching orientations:', error);
+      });
+  };
+
+  const fetchEtudiants = () => {
+    axios
+      .get('http://127.0.0.1:8000/etudiants/')
+      .then((response) => {
+        setEtudiants(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching etudiants:', error);
       });
   };
 
@@ -49,7 +70,11 @@ const Orientations = () => {
       titre: '',
       date_debut: '',
       date_fin: '',
+      capacite_cnm: '',
+      capacite_dsi: '',
+      capacite_rss: '',
       nombre_etudiants: '',
+      idu: ''
     });
   };
 
@@ -59,6 +84,10 @@ const Orientations = () => {
 
   const handleCloseCampagneDialog = () => {
     setOpenCampagneDialog(false);
+  };
+
+  const handleOpenDetailsPage = (orientation) => {
+    setRedirectTo(`/details/${orientation.idO}`);
   };
 
   const handleInputChange = (e) => {
@@ -87,7 +116,7 @@ const Orientations = () => {
           console.error('Error updating orientation:', error);
         });
     } else {
-      axios
+      axiosInstance
         .post('http://127.0.0.1:8000/orientations/', newOrientation)
         .then(() => {
           handleCloseDialog();
@@ -99,10 +128,15 @@ const Orientations = () => {
     }
   };
 
-  const handleCloseOrientation = (orientationId) => {
+  const handleCloseOrientation = (orientation) => {
+    const updatedOrientation = {
+      ...orientation,
+      status: 'fermer'
+    };
+
     axiosInstance
-      .put(`http://127.0.0.1:8000/orientations/${orientationId}/`, { status: 'fermer' })
-      .then(() => {
+      .put(`http://127.0.0.1:8000/orientations/${orientation.idO}/`, updatedOrientation)
+      .then((response) => {
         fetchOrientations();
         handleCloseCampagneDialog();
       })
@@ -111,7 +145,17 @@ const Orientations = () => {
       });
   };
 
+  const getMatriculeById = (idE) => {
+    const etudiant = etudiants.find(etudiant => etudiant.idE === idE);
+    return etudiant ? etudiant.matricule : 'N/A';
+  };
+
   const openOrientations = orientations.filter(orientation => orientation.status === 'ouvert');
+  const closedOrientations = orientations.filter(orientation => orientation.status === 'fermer');
+
+  if (redirectTo) {
+    return <Redirect to={redirectTo} />;
+  }
 
   return (
     <div>
@@ -122,7 +166,7 @@ const Orientations = () => {
         </Button>
       </div>
       <div className="table-container">
-        {orientations.length > 0 ? (
+        {closedOrientations.length > 0 ? (
           <table>
             <thead>
               <tr>
@@ -135,7 +179,7 @@ const Orientations = () => {
               </tr>
             </thead>
             <tbody>
-              {orientations.map((orientation) => (
+              {closedOrientations.map((orientation) => (
                 <tr key={orientation.idO}>
                   <td>{orientation.titre}</td>
                   <td>{orientation.date_debut}</td>
@@ -152,13 +196,22 @@ const Orientations = () => {
                     >
                       Modifier
                     </Button>
+                    <Button
+                      className="details-button"
+                      variant="text"
+                      color="secondary"
+                      startIcon={<MoreVertIcon />}
+                      onClick={() => handleOpenDetailsPage(orientation)}
+                    >
+                      Détails
+                    </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p>No orientations available.</p>
+          <p>No closed orientations available.</p>
         )}
       </div>
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -189,9 +242,41 @@ const Orientations = () => {
             margin="normal"
           />
           <TextField
-            label="Nombre des Etudiants"
+            label="Capacité CNM"
+            name="capacite_cnm"
+            value={newOrientation.capacite_cnm}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Capacité DSI"
+            name="capacite_dsi"
+            value={newOrientation.capacite_dsi}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Capacité RSS"
+            name="capacite_rss"
+            value={newOrientation.capacite_rss}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Nombre des Étudiants"
             name="nombre_etudiants"
             value={newOrientation.nombre_etudiants}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="ID Utilisateur"
+            name="idu"
+            value={newOrientation.idu}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
@@ -231,7 +316,7 @@ const Orientations = () => {
                         variant="contained"
                         color="secondary"
                         startIcon={<PowerSettingsNewIcon />}
-                        onClick={() => handleCloseOrientation(orientation.idO)}
+                        onClick={() => handleCloseOrientation(orientation)}
                       >
                         Clôture
                       </Button>

@@ -1,22 +1,24 @@
+
 [
+    
     {
         "icon": "bx bx-group",
         "count": "6",
-        "title": "les equipes"
+        "title": "les étudiants"
     },
     {
         "icon": "bx bx-crown",
         "count": "5",
-        "title": "les juryes"
+        "title": "campagne d orientation"
     },
     {
-        "icon": "bx bx-trophy",
+        "icon": "bx bx-select-multiple",
         "count": "7",
-        "title": "les challenges"
+        "title": "choix filière"
     },
     {
         "icon": "bx bx-medal",
-        "count": "let's code",
-        "title": "1st equipe "
+        "count": "1",
+        "title": "Grid d evaluation "
     }
 ]

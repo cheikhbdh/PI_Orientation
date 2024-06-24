@@ -1,0 +1,35 @@
+.choix-filiere-container {
+    position: relative;
+  }
+  
+  .table-container {
+    position: relative;
+    width: 100%;
+  }
+  
+  .button-container {
+    position: absolute;
+    bottom: -50px; /* Ajustez cette valeur selon vos besoins */
+    right: 0;
+  }
+  
+  .styled-button {
+    background: linear-gradient(to right, #8a2387, #e94057, #f27121);
+    border: none;
+    border-radius: 25px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .styled-button:hover {
+    transform: scale(1.05);
+  }
+  
+  .styled-button:focus {
+    outline: none;
+  }
+  

@@ -28,6 +28,7 @@ function Evaluations() {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [openOrientation, setOpenOrientation] = useState(null);
+    const [showCampaignSuccess, setShowCampaignSuccess] = useState(false);
 
     useEffect(() => {
         fetchUserId();
@@ -42,6 +43,7 @@ function Evaluations() {
             setOpenOrientation(orientation);
             setEndDate(orientation.date_fin);
             setFormSubmitted(true);
+            setShowCampaignSuccess(true); // Affiche le message de succès si une orientation est trouvée
         }
     }, []);
 
@@ -85,7 +87,6 @@ function Evaluations() {
                 setOpenOrientation(openOrientation);
                 setEndDate(openOrientation.date_fin);
                 setFormSubmitted(true);
-                localStorage.setItem('openOrientation', JSON.stringify(openOrientation));
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des orientations :', error);
@@ -105,19 +106,42 @@ function Evaluations() {
     };
 
     const handleCapacityChange = (index, event) => {
+        let value = parseInt(event.target.value);
+        if (value < 0) {
+            Swal.fire({
+                title: "Erreur",
+                text: "La capacité ne peut pas être négative",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            value = 0;
+        }
+
         const updatedFilieres = [...filieres];
-        updatedFilieres[index].capacity = event.target.value;
+        updatedFilieres[index].capacity = value.toString();
         setFilieres(updatedFilieres);
 
         const cnmCapacity = parseInt(updatedFilieres.find(filiere => filiere.name === 'CNM').capacity) || 0;
         const rssCapacity = parseInt(updatedFilieres.find(filiere => filiere.name === 'RSS').capacity) || 0;
+
+        if (cnmCapacity + rssCapacity > numberOfStudents) {
+            Swal.fire({
+                title: "Erreur",
+                text: "La somme des capacités de CNM et RSS ne peut pas dépasser le nombre total d'étudiants",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            updatedFilieres[index].capacity = '';
+            setFilieres(updatedFilieres);
+            return;
+        }
 
         if (!isNaN(cnmCapacity) && !isNaN(rssCapacity)) {
             const totalCapacityCNM_RSS = cnmCapacity + rssCapacity;
             const remainingStudents = numberOfStudents - totalCapacityCNM_RSS;
             const dsiIndex = updatedFilieres.findIndex(filiere => filiere.name === 'DSI');
             if (dsiIndex !== -1) {
-                updatedFilieres[dsiIndex].capacity = remainingStudents.toString();
+                updatedFilieres[dsiIndex].capacity = Math.max(0, remainingStudents).toString();
                 setFilieres(updatedFilieres);
             }
         }
@@ -134,6 +158,53 @@ function Evaluations() {
     };
 
     const handleSubmission = () => {
+        // Vérifiez que tous les champs sont remplis
+        if (!startDate || !endDate || !numberOfStudents) {
+            Swal.fire({
+                title: "Erreur",
+                text: "Veuillez remplir tous les champs",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const today = new Date();
+
+        if (start.toDateString() < today.toDateString()) {
+            Swal.fire({
+                title: "Erreur",
+                text: "La date de début ne peut pas être dans le passé",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+
+        if (end < start) {
+            Swal.fire({
+                title: "Erreur",
+                text: "La date de fin ne peut pas être antérieure à la date de début",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+
+        for (const filiere of filieres) {
+            if (!filiere.name || !filiere.capacity) {
+                Swal.fire({
+                    title: "Erreur",
+                    text: "Veuillez remplir tous les champs de filières",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+                return;
+            }
+        }
+
         Swal.fire({
             title: "Voulez-vous envoyer un email aux étudiants ?",
             icon: "question",
@@ -146,6 +217,7 @@ function Evaluations() {
                 setOpenDialog(true);
             } else {
                 setFormSubmitted(true);
+                setShowCampaignSuccess(true); // Affiche le message de succès si une orientation est trouvée
             }
         });
         submitFormData();
@@ -181,6 +253,7 @@ function Evaluations() {
 
             setSuccessMessage('Formulaire soumis avec succès.');
             setFormSubmitted(true);
+            setShowCampaignSuccess(true); // Affiche le message de succès après la soumission du formulaire
 
             console.log('Réponse du serveur :', response.data);
         } catch (error) {
@@ -204,6 +277,7 @@ function Evaluations() {
             });
 
             setSuccessMessage('E-mail envoyé avec succès.');
+            setShowCampaignSuccess(true); // Affiche le message de succès après l'envoi de l'e-mail
         } catch (error) {
             console.error('Échec de l\'envoi de l\'e-mail :', error);
             setErrorMessage('Erreur lors de l\'envoi de l\'e-mail.');
@@ -218,6 +292,11 @@ function Evaluations() {
 
     return (
         <div className="form-container">
+            {showCampaignSuccess && (
+                <div className="success-message">
+                    La campagne a été faite avec succès jusqu'à la date de fin {endDate}.
+                </div>
+            )}
             {openOrientation ? (
                 <div>
                     <p>Orientation ouverte jusqu'au : {openOrientation.date_fin}</p>
@@ -227,14 +306,17 @@ function Evaluations() {
                     <div>
                         <div className="form-group">
                             <label>Date début :</label>
-                            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
                         </div>
                         <div className="form-group-row">
                             <div className="form-group">
                                 <label>Nombre d'étudiants :</label>
-                                <div className="students-count">
-                                    {numberOfStudents}
-                                </div>
+                                <input 
+                                    type="number"
+                                    value={numberOfStudents}
+                                    onChange={(e) => setNumberOfStudents(parseInt(e.target.value))}
+                                    required
+                                />
                             </div>
                         </div>
                         <div className="form-group">
@@ -246,17 +328,20 @@ function Evaluations() {
                                             type="checkbox"
                                             checked={filiere.checked}
                                             onChange={() => handleCheckboxChange(index)}
+                                            required
                                         />
                                         <input
                                             type="text"
                                             value={filiere.name}
                                             onChange={(event) => handleFiliereChange(index, event)}
+                                            required
                                         />
                                         <input
                                             type="number"
                                             value={filiere.capacity}
                                             placeholder="Capacité"
                                             onChange={(event) => handleCapacityChange(index, event)}
+                                            required
                                         />
                                         {index > 2 && (
                                             <button onClick={() => removeFiliere(index)}>×</button>
@@ -268,7 +353,7 @@ function Evaluations() {
                         </div>
                         <div className="form-group">
                             <label>Date fin :</label>
-                            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} required />
                         </div>
                         <div className="form-group">
                             <button className="submit-btn" onClick={handleSubmission}>Soumettre</button>
@@ -284,6 +369,7 @@ function Evaluations() {
                         value={sujet}
                         onChange={(e) => setSujet(e.target.value)}
                         fullWidth
+                        required
                     />
                     <TextField
                         label="Contenu"
@@ -292,6 +378,7 @@ function Evaluations() {
                         fullWidth
                         multiline
                         rows={4}
+                        required
                     />
                 </DialogContent>
                 <DialogActions>

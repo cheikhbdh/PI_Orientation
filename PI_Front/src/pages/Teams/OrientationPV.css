@@ -1,0 +1,78 @@
+/* OrientationPV.css */
+.full-page {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .table-container {
+    width: 100%;
+    max-width: 1200px;
+    overflow-x: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+/*   
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  thead {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  thead th {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  tbody tr:hover {
+    background-color: #ddd;
+  }
+  
+  tbody td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .button-container {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  button.styled-button,
+  button.MuiButton-containedSecondary {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  button.styled-button:hover,
+  button.MuiButton-containedSecondary:hover {
+    background-color: #45a049;
+  }
+  
+  .back-button {
+    align-self: flex-start;
+    margin-bottom: 20px;
+  }
+   */

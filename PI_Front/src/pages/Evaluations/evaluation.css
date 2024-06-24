@@ -70,3 +70,22 @@
 .submit-btn:hover {
     background-color: #0056b3;
 }
+
+.styled-button {
+    background-color: #7b1fa2;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    margin: 20px auto 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.styled-button:hover {
+    background-color: #4a148c;
+}

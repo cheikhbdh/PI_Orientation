@@ -21,6 +21,7 @@
     "apexcharts": "^3.27.1",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "file-saver": "^2.0.5",
     "mdb-react-ui-kit": "^8.0.0",
     "pdf.js": "^0.1.0",
     "pdfjs-dist": "^3.6.172",
@@ -35,9 +36,12 @@
     "react-scripts": "4.0.3",
     "react-toastify": "^10.0.5",
     "redux": "^4.1.0",
-    "sweetalert2": "^11.11.0",
+    "sweetalert2": "^11.12.0",
     "typed.js": "^2.1.0",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "xlsx": "^0.18.5",
+    "xlsx-style": "^0.8.13",
+    "xlsx-style-correct": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

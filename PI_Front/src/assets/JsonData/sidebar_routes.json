@@ -12,16 +12,16 @@
     {
         "display_name": "choix des filieres",
         "route": "/equipes",
-        "icon": "bx bx-user-pin"
+        "icon": "bx bx-select-multiple"
     },
-    
     {
-        "display_name": "Orinetation finale",
+        "display_name": "Gride d evluation ",
         "route": "/challenges",
         "icon": "bx bx-envelope-open"
     },
+
     {
-        "display_name": "Gestion des utilsatuer",
+        "display_name": "Campagne d orientation",
         "route": "/evaluation",
         "icon": "bx bx-calendar-event"
     }

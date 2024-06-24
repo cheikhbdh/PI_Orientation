@@ -1,0 +1,42 @@
+.bdh{
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.sch {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.slo {
+    flex: 1;
+    padding: 1rem;
+}
+
+.status-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.status-card__icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.status-card__info {
+    text-align: center;
+}
+
+.status-card__info h4 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.status-card__info span {
+    color: #888;
+}
